@@ -1,5 +1,6 @@
 package net.azisaba.azipluginmessaging.api;
 
+import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +29,19 @@ public interface AziPluginMessaging {
      */
     @NotNull
     Server getServer();
+
+    /**
+     * Returns the player adapter for class.
+     * <p>Generally, class should be one of these (depending on the environment):
+     * <ul>
+     *     <li>org.bukkit.entity.Player</li>
+     *     <li>com.velocitypowered.api.proxy.Player</li>
+     * </ul>
+     * @param clazz the platform dependent player class
+     * @return the player adapter
+     * @param <T> the player class
+     */
+    <T> PlayerAdapter<T> getPlayerAdapter(@NotNull Class<T> clazz);
 
     interface Proxy {
         /**
