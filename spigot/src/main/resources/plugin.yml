@@ -1,0 +1,8 @@
+name: AziPluginMessaging
+main: net.azisaba.azipluginmessaging.spigot.SpigotPlugin
+version: 1.0.0
+depend:
+  - LuckPerms
+commands:
+  azipluginmessaging:
+    permission: azipluginmessaging.use_command
