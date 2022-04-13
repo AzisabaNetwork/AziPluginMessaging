@@ -5,7 +5,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
 }
 
-group = "net.azisaba"
+group = "net.azisaba.azipluginmessaging"
 version = "1.0.0"
 
 repositories {
@@ -13,10 +13,6 @@ repositories {
 }
 
 dependencies {
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
 tasks {
@@ -38,5 +34,25 @@ subprojects {
 
     repositories {
         mavenCentral()
+    }
+}
+
+allprojects {
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    val javaComponent = components["java"] as AdhocComponentWithVariants
+    javaComponent.withVariantsFromConfiguration(configurations["sourcesElements"]) {
+        skip()
+    }
+
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifact(tasks.getByName("sourcesJar"))
+        }
     }
 }
