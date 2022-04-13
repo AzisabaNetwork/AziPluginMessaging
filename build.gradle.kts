@@ -49,10 +49,12 @@ allprojects {
         skip()
     }
 
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-            artifact(tasks.getByName("sourcesJar"))
+    publishing {
+        publications {
+            create<MavenPublication>("mavenJava") {
+                from(components["java"])
+                artifact(tasks.getByName("sourcesJar"))
+            }
         }
     }
 }
