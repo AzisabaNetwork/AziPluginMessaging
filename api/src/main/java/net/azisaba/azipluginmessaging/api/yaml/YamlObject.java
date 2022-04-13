@@ -11,7 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a yaml object.
+ */
 public class YamlObject implements YamlMember {
+    /**
+     * Represents a NULL object.
+     */
     public static final YamlMember NULL =
             new YamlObject() {
                 @Override

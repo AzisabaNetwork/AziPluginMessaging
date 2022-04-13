@@ -10,6 +10,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * A message with player argument only.
+ */
 public class PlayerMessage implements Message {
     protected final Player player;
 

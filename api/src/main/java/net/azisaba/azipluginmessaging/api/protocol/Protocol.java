@@ -49,10 +49,18 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
         BY_ID.put(this.id, this);
     }
 
+    /**
+     * Returns the packet id.
+     * @return id
+     */
     public byte getId() {
         return id;
     }
 
+    /**
+     * Returns the handler registered when this protocol was created.
+     * @return the handler
+     */
     @NotNull
     public T getHandler() {
         return handler;
@@ -77,6 +85,11 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
         }
     }
 
+    /**
+     * This method is called when a packet is received (proxy-side).
+     * @param server the server connection
+     * @param data the data of the packet
+     */
     public static void handleProxySide(ServerConnection server, byte[] data) {
         try (ByteArrayInputStream bin = new ByteArrayInputStream(data);
              DataInputStream in = new DataInputStream(bin)) {
@@ -103,11 +116,20 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
         }
     }
 
+    /**
+     * Gets the protocol (packet) by its id.
+     * @param id the id
+     * @return the protocol, or null if not found
+     */
     @Nullable
     public static Protocol<?, ?> getById(byte id) {
         return BY_ID.get(id);
     }
 
+    /**
+     * Returns all the protocols.
+     * @return list of protocols
+     */
     @Contract(pure = true)
     @NotNull
     public static Collection<Protocol<?, ?>> values() {

@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * A message with server and player arguments.
+ */
 public class PlayerWithServerMessage extends PlayerMessage {
     protected final String server;
 

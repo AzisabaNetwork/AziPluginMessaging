@@ -6,31 +6,34 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * YamlConfiguration loads the yaml data from file or input stream and converts into an object or an array.
+ */
 public class YamlConfiguration {
     public static final Yaml DEFAULT = new Yaml();
 
     private final Yaml yaml;
     private final Object data;
 
-    public YamlConfiguration(@NotNull String path) throws FileNotFoundException {
+    public YamlConfiguration(@NotNull String path) throws IOException {
         this(new File(path));
     }
 
-    public YamlConfiguration(@NotNull File file) throws FileNotFoundException {
+    public YamlConfiguration(@NotNull File file) throws IOException {
         if (!file.exists() || !file.isFile())
             throw new FileNotFoundException(file.getName() + " does not exist or is not a file");
         this.yaml = DEFAULT;
-        this.data = this.yaml.load(new FileInputStream(file));
+        this.data = this.yaml.load(Files.newInputStream(file.toPath()));
     }
 
     public YamlConfiguration(@NotNull Yaml yaml, @NotNull InputStream inputStream) {

@@ -13,6 +13,13 @@ import org.jetbrains.annotations.Range;
 import java.util.Objects;
 
 public class LuckPermsUtil {
+    /**
+     * Finds the inheritance node from the given node map.
+     * @param map the node map
+     * @param group the group to find
+     * @param server the server to apply server context to
+     * @return the node, or null if not found
+     */
     @Nullable
     public static Node findNode(@NotNull NodeMap map, @NotNull String group, @Nullable String server) {
         if (server == null) {
@@ -35,8 +42,16 @@ public class LuckPermsUtil {
                 .orElse(null);
     }
 
+    /**
+     * Adds the given group to the given node map.
+     * @param map the node map
+     * @param group the group to add
+     * @param server the server to apply server context to
+     * @param expiryEpochSeconds the expiry epoch seconds; -1 to never expire
+     * @return the result of the operation
+     */
     @SuppressWarnings("UnusedReturnValue")
-    public static DataMutateResult addGroup(
+    public static @NotNull DataMutateResult addGroup(
             @NotNull NodeMap map,
             @NotNull String group,
             @Nullable String server,

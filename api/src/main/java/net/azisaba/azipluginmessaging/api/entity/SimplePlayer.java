@@ -5,13 +5,18 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Simple instance of {@link Player}.
+ */
 public final class SimplePlayer implements Player {
     private final UUID uuid;
     private final String username;
 
     public SimplePlayer(@NotNull UUID uuid, @Nullable String username) {
+        Objects.requireNonNull(uuid);
         this.uuid = uuid;
         this.username = username;
     }

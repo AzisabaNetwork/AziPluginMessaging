@@ -17,6 +17,9 @@ public class AziPluginMessagingConfig {
     public static final Map<String, String> saraShowServers = new ConcurrentHashMap<>();
     public static final Map<String, String> rankableServers = new ConcurrentHashMap<>();
 
+    /**
+     * Reloads all configuration from config file.
+     */
     public static void reload() {
         saraShowServers.clear();
         rankableServers.clear();

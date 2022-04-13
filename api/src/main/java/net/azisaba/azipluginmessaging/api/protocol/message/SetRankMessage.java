@@ -11,6 +11,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * A message that sets the rank of a player.
+ */
 public class SetRankMessage extends PlayerWithServerMessage {
     protected final String rank;
 

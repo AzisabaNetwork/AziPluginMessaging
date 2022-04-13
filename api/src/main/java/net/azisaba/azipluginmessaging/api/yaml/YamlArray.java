@@ -14,6 +14,9 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Represents a yaml list (or array).
+ */
 public class YamlArray extends ArrayList<Object> implements YamlMember {
     private final Yaml yaml;
 

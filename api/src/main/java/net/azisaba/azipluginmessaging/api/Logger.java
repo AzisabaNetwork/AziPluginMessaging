@@ -9,6 +9,9 @@ import java.lang.reflect.Proxy;
 import java.util.Objects;
 import java.util.logging.Level;
 
+/**
+ * Represents a logger.
+ */
 public interface Logger {
     @NotNull Logger DEFAULT_LOGGER = createFromJavaLogger(java.util.logging.Logger.getLogger("AziPluginMessaging"));
 
