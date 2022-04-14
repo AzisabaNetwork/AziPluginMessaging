@@ -1,7 +1,8 @@
 package net.azisaba.azipluginmessaging.api.protocol.handler;
 
 import net.azisaba.azipluginmessaging.api.AziPluginMessagingConfig;
-import net.azisaba.azipluginmessaging.api.protocol.message.SetRankMessage;
+import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundSetRankMessage;
+import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
 import net.azisaba.azipluginmessaging.api.util.LuckPermsUtil;
 import net.luckperms.api.LuckPerms;
@@ -22,17 +23,17 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
-public class SetRankHandler implements MessageHandler<SetRankMessage> {
+public class ProxyboundSetRankPacket implements ProxyMessageHandler<ProxyboundSetRankMessage> {
     @Override
-    public @NotNull SetRankMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {
+    public @NotNull ProxyboundSetRankMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {
         String serverName = server.getServerInfo().getName();
         String s = AziPluginMessagingConfig.rankableServers.get(serverName);
         Objects.requireNonNull(s, "server is null (rankableServers entry in config.yml is missing)");
-        return SetRankMessage.read(s, in);
+        return ProxyboundSetRankMessage.read(s, in);
     }
 
     @Override
-    public void handle(@NotNull SetRankMessage msg) {
+    public void handle(@NotNull PacketSender sender, @NotNull ProxyboundSetRankMessage msg) {
         Objects.requireNonNull(msg.getServer(), "server cannot be null");
         LuckPerms api = LuckPermsProvider.get();
         User user = api.getUserManager().loadUser(msg.getPlayer().getUniqueId()).join();

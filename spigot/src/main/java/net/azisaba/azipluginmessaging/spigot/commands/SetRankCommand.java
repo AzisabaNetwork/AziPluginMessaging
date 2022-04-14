@@ -1,9 +1,9 @@
 package net.azisaba.azipluginmessaging.spigot.commands;
 
-import net.azisaba.azipluginmessaging.api.AziPluginMessagingProvider;
 import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
-import net.azisaba.azipluginmessaging.api.protocol.message.SetRankMessage;
+import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundSetRankMessage;
+import net.azisaba.azipluginmessaging.spigot.SpigotPlugin;
 import net.azisaba.azipluginmessaging.spigot.command.Command;
 import net.azisaba.azipluginmessaging.spigot.entity.PlayerImpl;
 import net.azisaba.azipluginmessaging.spigot.util.PlayerUtil;
@@ -30,11 +30,11 @@ public class SetRankCommand implements Command {
                 target = new PlayerImpl((org.bukkit.entity.Player) sender);
             }
         }
-        boolean res = Protocol.SET_RANK.sendPacket(AziPluginMessagingProvider.get().getServer().getPacketSender(), new SetRankMessage(rank, target));
+        boolean res = Protocol.P_SET_RANK.sendPacket(SpigotPlugin.getAnyPacketSender(), new ProxyboundSetRankMessage(rank, target));
         if (res) {
             sender.sendMessage(ChatColor.GREEN + "Sent a request to change " + target.getUsername() + "'s rank to " + rank);
         } else {
-            sender.sendMessage(ChatColor.RED + "Failed to send the packet. Maybe check console for errors?");
+            sender.sendMessage(ChatColor.RED + "Failed to send the packet (attempted to change " + target.getUsernameOrUniqueId() + "'s rank to " + rank + "). Maybe check console for errors?");
         }
     }
 

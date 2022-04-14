@@ -18,7 +18,7 @@ public class ToggleSaraHideCommand implements Command {
             return;
         }
         Player target = PlayerUtil.getOfflinePlayer(args[0]);
-        boolean res = Protocol.TOGGLE_SARA_HIDE.sendPacket(SpigotPlugin.plugin, new PlayerMessage(target));
+        boolean res = Protocol.P_TOGGLE_SARA_HIDE.sendPacket(SpigotPlugin.getAnyPacketSender(), new PlayerMessage(target));
         if (res) {
             sender.sendMessage(ChatColor.GREEN + "Sent a request to toggle " + target.getUsername() + "'s sara hide.");
         } else {

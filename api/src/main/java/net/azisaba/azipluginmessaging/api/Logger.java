@@ -49,7 +49,7 @@ public interface Logger {
             private String format(@NotNull String msg) {
                 int length = 0;
                 while (msg.contains("{}")) {
-                    msg = msg.replace("{}", "{" + length++ + "}");
+                    msg = msg.replaceFirst("\\{}", "{" + length++ + "}");
                 }
                 return msg;
             }

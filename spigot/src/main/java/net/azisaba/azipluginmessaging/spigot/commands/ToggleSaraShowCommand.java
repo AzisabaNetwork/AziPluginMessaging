@@ -2,7 +2,6 @@ package net.azisaba.azipluginmessaging.spigot.commands;
 
 import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
-import net.azisaba.azipluginmessaging.api.protocol.message.PlayerMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.PlayerWithServerMessage;
 import net.azisaba.azipluginmessaging.spigot.SpigotPlugin;
 import net.azisaba.azipluginmessaging.spigot.command.Command;
@@ -19,7 +18,7 @@ public class ToggleSaraShowCommand implements Command {
             return;
         }
         Player target = PlayerUtil.getOfflinePlayer(args[0]);
-        boolean res = Protocol.TOGGLE_SARA_SHOW.sendPacket(SpigotPlugin.plugin, new PlayerWithServerMessage(target));
+        boolean res = Protocol.P_TOGGLE_SARA_SHOW.sendPacket(SpigotPlugin.getAnyPacketSender(), new PlayerWithServerMessage(target));
         if (res) {
             sender.sendMessage(ChatColor.GREEN + "Sent a request to toggle " + target.getUsername() + "'s sara show flag.");
         } else {

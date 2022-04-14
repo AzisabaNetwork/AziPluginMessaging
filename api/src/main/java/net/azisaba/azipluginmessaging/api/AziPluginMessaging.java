@@ -1,10 +1,12 @@
 package net.azisaba.azipluginmessaging.api;
 
+import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface AziPluginMessaging {
     /**
@@ -30,6 +32,9 @@ public interface AziPluginMessaging {
     @NotNull
     Server getServer();
 
+    @NotNull
+    Optional<Player> getPlayer(@NotNull UUID uuid);
+
     /**
      * Returns the player adapter for class.
      * <p>Generally, class should be one of these (depending on the environment):
@@ -44,15 +49,6 @@ public interface AziPluginMessaging {
     <T> PlayerAdapter<T> getPlayerAdapter(@NotNull Class<T> clazz);
 
     interface Proxy {
-        /**
-         * Returns the packet sender instance for provided server.
-         * @param serverName the server name
-         * @return the packet sender instance
-         */
-        @NotNull
-        default Optional<PacketSender> getPacketSenderForServer(@NotNull String serverName) {
-            throw new UnsupportedOperationException("Unsupported in current environment.");
-        }
     }
 
     interface Server {

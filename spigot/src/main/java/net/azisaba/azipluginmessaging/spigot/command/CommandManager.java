@@ -2,6 +2,7 @@ package net.azisaba.azipluginmessaging.spigot.command;
 
 import net.azisaba.azipluginmessaging.spigot.commands.DumpProtocolCommand;
 import net.azisaba.azipluginmessaging.spigot.commands.GiveGamingSaraCommand;
+import net.azisaba.azipluginmessaging.spigot.commands.GiveSaraCommand;
 import net.azisaba.azipluginmessaging.spigot.commands.HelpCommand;
 import net.azisaba.azipluginmessaging.spigot.commands.SetRankCommand;
 import net.azisaba.azipluginmessaging.spigot.commands.ToggleGamingSaraCommand;
@@ -17,6 +18,7 @@ public class CommandManager {
             new HelpCommand(),
             new SetRankCommand(),
             new GiveGamingSaraCommand(),
+            new GiveSaraCommand(),
             new ToggleGamingSaraCommand(),
             new ToggleSaraHideCommand(),
             new ToggleSaraShowCommand(),

@@ -23,6 +23,12 @@ public interface Player {
     UUID getUniqueId();
 
     /**
+     * Sends a message to the player. This method might do nothing depending on the implementation.
+     * @param message the message
+     */
+    void sendMessage(@NotNull String message);
+
+    /**
      * Returns the username if present, and fallbacks to unique id.
      * @return username or unique id
      */

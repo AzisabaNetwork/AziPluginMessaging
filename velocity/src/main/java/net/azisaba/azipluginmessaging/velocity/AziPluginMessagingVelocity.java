@@ -9,9 +9,11 @@ import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.velocity.entity.PlayerImpl;
+import net.azisaba.azipluginmessaging.velocity.server.ServerConnectionImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class AziPluginMessagingVelocity implements AziPluginMessaging {
     private final ProxyServer server;
@@ -39,6 +41,11 @@ public class AziPluginMessagingVelocity implements AziPluginMessaging {
         return new Server() {};
     }
 
+    @Override
+    public @NotNull Optional<net.azisaba.azipluginmessaging.api.entity.Player> getPlayer(@NotNull UUID uuid) {
+        return server.getPlayer(uuid).map(PlayerImpl::new);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> PlayerAdapter<T> getPlayerAdapter(@NotNull Class<T> clazz) {
@@ -46,12 +53,6 @@ public class AziPluginMessagingVelocity implements AziPluginMessaging {
         return (PlayerAdapter<T>) (PlayerAdapter<Player>) PlayerImpl::new;
     }
 
-    public class ProxyImpl implements Proxy {
-        @Override
-        public @NotNull Optional<PacketSender> getPacketSenderForServer(@NotNull String serverName) {
-            return AziPluginMessagingVelocity.this.server
-                    .getServer(serverName)
-                    .map(server -> data -> server.sendPluginMessage(MinecraftChannelIdentifier.from(Protocol.CHANNEL_ID), data));
-        }
+    public static class ProxyImpl implements Proxy {
     }
 }

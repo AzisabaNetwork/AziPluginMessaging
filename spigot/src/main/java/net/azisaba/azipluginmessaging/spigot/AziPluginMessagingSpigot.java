@@ -9,7 +9,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class AziPluginMessagingSpigot implements AziPluginMessaging {
     private final Logger logger;
@@ -35,6 +38,13 @@ public class AziPluginMessagingSpigot implements AziPluginMessaging {
         return server;
     }
 
+    @Override
+    public @NotNull Optional<net.azisaba.azipluginmessaging.api.entity.Player> getPlayer(@NotNull UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return Optional.empty();
+        return Optional.of(new PlayerImpl(player));
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> PlayerAdapter<T> getPlayerAdapter(@NotNull Class<T> clazz) {
@@ -45,14 +55,14 @@ public class AziPluginMessagingSpigot implements AziPluginMessaging {
     public static class ServerImpl implements Server {
         @Override
         public @NotNull PacketSender getPacketSender() {
-            return data -> {
-                Optional<? extends org.bukkit.entity.Player> p = Bukkit.getOnlinePlayers().stream().findAny();
-                if (!p.isPresent()) {
-                    return false;
-                }
-                PlayerImpl.sendPacketFromPlayer(p.get(), data);
-                return true;
-            };
+            // prefer encrypted players (that is, player who is connected to the proxy where AziPluginMessaging is installed)
+            List<PlayerImpl> players = Bukkit.getOnlinePlayers()
+                    .stream()
+                    .map(PlayerImpl::new)
+                    .collect(Collectors.toList());
+            if (players.size() == 0) throw new IllegalArgumentException("No player is online.");
+            Optional<PlayerImpl> encryptedPlayer = players.stream().filter(PlayerImpl::isEncrypted).findAny();
+            return encryptedPlayer.orElseGet(() -> players.get(0));
         }
     }
 }

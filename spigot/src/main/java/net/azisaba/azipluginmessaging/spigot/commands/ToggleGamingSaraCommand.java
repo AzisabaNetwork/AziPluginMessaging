@@ -25,7 +25,7 @@ public class ToggleGamingSaraCommand implements Command {
                 target = new PlayerImpl((org.bukkit.entity.Player) sender);
             }
         }
-        boolean res = Protocol.TOGGLE_GAMING_SARA.sendPacket(SpigotPlugin.plugin, new PlayerMessage(target));
+        boolean res = Protocol.P_TOGGLE_GAMING_SARA.sendPacket(SpigotPlugin.getAnyPacketSender(), new PlayerMessage(target));
         if (res) {
             sender.sendMessage(ChatColor.GREEN + "Sent a request to toggle " + target.getUsername() + "'s gaming sara");
         } else {

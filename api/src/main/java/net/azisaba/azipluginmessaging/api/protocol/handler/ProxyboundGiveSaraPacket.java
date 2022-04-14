@@ -1,8 +1,11 @@
 package net.azisaba.azipluginmessaging.api.protocol.handler;
 
-import net.azisaba.azipluginmessaging.api.exception.MissingPermissionException;
-import net.azisaba.azipluginmessaging.api.protocol.message.PlayerMessage;
+import net.azisaba.azipluginmessaging.api.Logger;
+import net.azisaba.azipluginmessaging.api.entity.SimplePlayer;
+import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundGiveSaraMessage;
+import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
+import net.azisaba.azipluginmessaging.api.util.Constants;
 import net.azisaba.azipluginmessaging.api.util.LuckPermsUtil;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -18,32 +21,33 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
-public class ToggleGamingSaraHandler implements MessageHandler<PlayerMessage> {
+public class ProxyboundGiveSaraPacket implements ProxyMessageHandler<ProxyboundGiveSaraMessage> {
     @Override
-    public @NotNull PlayerMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {
-        return PlayerMessage.read(in);
+    public @NotNull ProxyboundGiveSaraMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {
+        return new ProxyboundGiveSaraMessage(in.readInt(), SimplePlayer.read(in));
     }
 
     @Override
-    public void handle(@NotNull PlayerMessage msg) {
+    public void handle(@NotNull PacketSender sender, @NotNull ProxyboundGiveSaraMessage msg) {
         LuckPerms api = LuckPermsProvider.get();
         User user = api.getUserManager().loadUser(msg.getPlayer().getUniqueId()).join();
         if (user == null || user.getUsername() == null) {
             throw new IllegalArgumentException("User " + msg.getPlayer().getUniqueId() + " could not be found in the LuckPerms database.");
         }
-        String username = user.getUsername();
-        NodeMap map = user.getData(DataType.NORMAL);
-        Node nodeChangeGamingSara = LuckPermsUtil.findNode(map, "changegamingsara", null);
-        if (nodeChangeGamingSara == null) {
-            throw new MissingPermissionException("User " + msg.getPlayer().getUniqueId() + " does not have the group 'changegamingsara'.");
+        if (!Constants.SARA_GROUPS.contains(msg.getAmount())) {
+            throw new IllegalArgumentException("Invalid sara group: " + msg.getAmount());
         }
-        char p = '+';
-        Node nodeGamingSara = LuckPermsUtil.findNode(map, "gamingsara", null);
-        if (nodeGamingSara != null) {
-            map.remove(nodeGamingSara);
-            p = '-';
-        } else {
-            LuckPermsUtil.addGroup(map, "gamingsara", null, -1);
+        String username = user.getUsername();
+        boolean modified = false;
+        NodeMap map = user.getData(DataType.NORMAL);
+        Node nodeSara = LuckPermsUtil.findNode(map, msg.getAmount() + "yen", null);
+        if (nodeSara == null) {
+            LuckPermsUtil.addGroup(map, msg.getAmount() + "yen", null, -1);
+            modified = true;
+        }
+        if (!modified) {
+            Logger.getCurrentLogger().warn("Received GiveSara request for {} but they already have the rank", username);
+            return;
         }
         api.getUserManager().saveUser(user);
         api.getMessagingService().ifPresent(service -> service.pushUserUpdate(user));
@@ -55,7 +59,7 @@ public class ToggleGamingSaraHandler implements MessageHandler<PlayerMessage> {
                         .sourceName("AziPluginMessaging@" + api.getServerName())
                         .target(msg.getPlayer().getUniqueId())
                         .targetName(username)
-                        .description("Toggled " + p + "gamingsara for " + username)
+                        .description("Added " + msg.getAmount() + "yen sara to " + username)
                         .build());
     }
 }
