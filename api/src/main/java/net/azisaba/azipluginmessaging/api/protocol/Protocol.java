@@ -105,6 +105,9 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
      * @return true if the message was sent successfully, false otherwise.
      */
     public boolean sendPacket(@NotNull PacketSender sender, @NotNull M msg) {
+        if (id != 0 && !sender.isEncrypted()) {
+            throw new IllegalStateException("Cannot send packet " + id + " without encryption");
+        }
         try (ByteArrayOutputStream bout = new ByteArrayOutputStream();
              DataOutputStream out = new DataOutputStream(bout)) {
             out.writeByte(id);
@@ -148,6 +151,9 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
         try (ByteArrayInputStream bin = new ByteArrayInputStream(data);
              DataInputStream in = new DataInputStream(bin)) {
             byte id = (byte) (in.readByte() & 0xFF);
+            if (id != 0 && !server.isEncrypted()) {
+                throw new RuntimeException("Packet " + id + " must be sent encrypted (server: " + server + ")");
+            }
             Protocol<?, ?> protocol = Protocol.getById(PacketFlow.TO_PROXY, id);
             if (protocol == null) {
                 Logger.getCurrentLogger().warn(
@@ -190,6 +196,9 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
         try (ByteArrayInputStream bin = new ByteArrayInputStream(data);
              DataInputStream in = new DataInputStream(bin)) {
             byte id = (byte) (in.readByte() & 0xFF);
+            if (id != 0 && !sender.isEncrypted()) {
+                throw new RuntimeException("Packet " + id + " must be sent encrypted (sender: " + sender + ")");
+            }
             Protocol<?, ?> protocol = Protocol.getById(PacketFlow.TO_SERVER, id);
             if (protocol == null) {
                 Logger.getCurrentLogger().warn("Received unknown protocol id from {}: {}", sender, id);

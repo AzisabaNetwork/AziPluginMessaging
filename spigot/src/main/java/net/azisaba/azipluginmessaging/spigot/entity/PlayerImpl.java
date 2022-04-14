@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerImpl implements Player, PacketSender {
     private static final Map<UUID, PlayerImpl> MAP = new ConcurrentHashMap<>();
-    private final org.bukkit.entity.Player handle;
+    private org.bukkit.entity.Player handle;
     private KeyPair keyPair;
     private PublicKey remotePublicKey;
     private boolean encrypted = false;
@@ -33,7 +33,9 @@ public class PlayerImpl implements Player, PacketSender {
 
     @NotNull
     public static PlayerImpl of(@NotNull org.bukkit.entity.Player player) {
-        return MAP.computeIfAbsent(player.getUniqueId(), u -> new PlayerImpl(player));
+        PlayerImpl p = MAP.computeIfAbsent(player.getUniqueId(), u -> new PlayerImpl(player));
+        p.handle = player;
+        return p;
     }
 
     @NotNull
