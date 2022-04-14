@@ -2,7 +2,7 @@ package net.azisaba.azipluginmessaging.api.protocol.handler;
 
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
-import net.azisaba.azipluginmessaging.api.protocol.message.PublicKeyMessage;
+import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
 import net.azisaba.azipluginmessaging.api.util.Constants;
@@ -11,18 +11,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInputStream;
 
-public class ProxyboundEncryptionPacket implements ProxyMessageHandler<PublicKeyMessage> {
+public class ProxyboundEncryptionPacket implements ProxyMessageHandler<EncryptionMessage> {
     @Override
-    public @NotNull PublicKeyMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) {
+    public @NotNull EncryptionMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) {
         try {
-            return PublicKeyMessage.read(in);
+            return EncryptionMessage.read(in);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void handle(@NotNull PacketSender sender, @NotNull PublicKeyMessage msg) throws Exception {
+    public void handle(@NotNull PacketSender sender, @NotNull EncryptionMessage msg) throws Exception {
         // Set public key of the server for encryption (note that this does not set the encrypted flag)
         sender.setRemotePublicKey(msg.getPublicKey());
 
@@ -32,7 +32,7 @@ public class ProxyboundEncryptionPacket implements ProxyMessageHandler<PublicKey
         }
 
         // Send our public key to the server
-        if (!Protocol.S_ENCRYPTION.sendPacket(sender, new PublicKeyMessage(sender.getKeyPair().getPublic()))) {
+        if (!Protocol.S_ENCRYPTION.sendPacket(sender, new EncryptionMessage(msg.getChallenge(), sender.getKeyPair().getPublic()))) {
             Logger.getCurrentLogger().warn("Failed to send public key to the server " + sender);
         }
 

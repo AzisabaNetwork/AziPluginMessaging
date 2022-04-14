@@ -36,4 +36,9 @@ public class PlayerImpl implements Player {
     public void sendMessage(@NotNull String message) {
         getHandle().sendMessage(LEGACY_COMPONENT_SERIALIZER.deserialize(message));
     }
+
+    @Override
+    public boolean isChallengeEquals(@NotNull String challenge) {
+        return false;
+    }
 }

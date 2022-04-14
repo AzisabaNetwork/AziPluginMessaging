@@ -27,7 +27,7 @@ public class SetRankCommand implements Command {
                 sender.sendMessage(ChatColor.RED + "You are not a player");
                 return;
             } else {
-                target = new PlayerImpl((org.bukkit.entity.Player) sender);
+                target = PlayerImpl.of((org.bukkit.entity.Player) sender);
             }
         }
         boolean res = Protocol.P_SET_RANK.sendPacket(SpigotPlugin.getAnyPacketSender(), new ProxyboundSetRankMessage(rank, target));

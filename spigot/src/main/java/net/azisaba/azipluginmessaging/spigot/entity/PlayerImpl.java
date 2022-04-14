@@ -10,33 +10,30 @@ import org.jetbrains.annotations.Nullable;
 
 import java.security.KeyPair;
 import java.security.PublicKey;
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerImpl implements Player, PacketSender {
-    private static final Map<UUID, Map.Entry<KeyPair, PublicKey>> KEY_MAP = new ConcurrentHashMap<>();
+    private static final Map<UUID, PlayerImpl> MAP = new ConcurrentHashMap<>();
     private final org.bukkit.entity.Player handle;
     private KeyPair keyPair;
     private PublicKey remotePublicKey;
     private boolean encrypted = false;
+    public String challenge = null;
 
     @Contract(value = "null -> fail", pure = true)
-    public PlayerImpl(@Nullable org.bukkit.entity.Player handle) {
+    private PlayerImpl(@Nullable org.bukkit.entity.Player handle) {
         if (handle == null) {
             throw new IllegalArgumentException("player is null");
         }
         this.handle = Objects.requireNonNull(handle);
-        Map.Entry<KeyPair, PublicKey> key = KEY_MAP.get(handle.getUniqueId());
-        if (key != null) {
-            this.keyPair = key.getKey();
-            if (key.getValue() != null) {
-                this.remotePublicKey = key.getValue();
-                this.encrypted = true;
-            }
-        }
+    }
+
+    @NotNull
+    public static PlayerImpl of(@NotNull org.bukkit.entity.Player player) {
+        return MAP.computeIfAbsent(player.getUniqueId(), u -> new PlayerImpl(player));
     }
 
     @NotNull
@@ -72,7 +69,6 @@ public class PlayerImpl implements Player, PacketSender {
     }
 
     public void setKeyPair(@NotNull KeyPair keyPair) {
-        KEY_MAP.put(getUniqueId(), new AbstractMap.SimpleImmutableEntry<>(keyPair, remotePublicKey));
         this.keyPair = keyPair;
     }
 
@@ -95,13 +91,17 @@ public class PlayerImpl implements Player, PacketSender {
     @Override
     public void setRemotePublicKey(@NotNull PublicKey remotePublicKey) {
         Objects.requireNonNull(remotePublicKey, "remotePublicKey is null");
-        KEY_MAP.put(getUniqueId(), new AbstractMap.SimpleImmutableEntry<>(keyPair, remotePublicKey));
         this.remotePublicKey = remotePublicKey;
     }
 
     public void setRemotePublicKeyInternal(@Nullable PublicKey remotePublicKey) {
-        KEY_MAP.put(getUniqueId(), new AbstractMap.SimpleImmutableEntry<>(keyPair, remotePublicKey));
         this.remotePublicKey = remotePublicKey;
+    }
+
+    @Override
+    public boolean isChallengeEquals(@NotNull String challenge) {
+        if (this.challenge == null) return false;
+        return this.challenge.equals(challenge);
     }
 
     @Override

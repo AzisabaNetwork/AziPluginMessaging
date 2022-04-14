@@ -13,12 +13,12 @@ import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundToggleSaraS
 import net.azisaba.azipluginmessaging.api.protocol.handler.ServerMessageHandler;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ServerboundActionResponsePacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ServerboundEncryptionPacket;
+import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.Message;
 import net.azisaba.azipluginmessaging.api.protocol.message.PlayerMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.PlayerWithServerMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundGiveSaraMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundSetRankMessage;
-import net.azisaba.azipluginmessaging.api.protocol.message.PublicKeyMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ServerboundActionResponseMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
@@ -43,7 +43,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     public static final String LEGACY_CHANNEL_ID = "AziPluginMessaging";
     public static final String CHANNEL_ID = "azipm:main";
 
-    public static final Protocol<ProxyboundEncryptionPacket, PublicKeyMessage> P_ENCRYPTION = new Protocol<>(PacketFlow.TO_PROXY, 0x00, new ProxyboundEncryptionPacket());
+    public static final Protocol<ProxyboundEncryptionPacket, EncryptionMessage> P_ENCRYPTION = new Protocol<>(PacketFlow.TO_PROXY, 0x00, new ProxyboundEncryptionPacket());
     public static final Protocol<ProxyboundSetRankPacket, ProxyboundSetRankMessage> P_SET_RANK = new Protocol<>(PacketFlow.TO_PROXY, 0x01, new ProxyboundSetRankPacket());
     public static final Protocol<ProxyboundGiveGamingSaraPacket, PlayerMessage> P_GIVE_GAMING_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x02, new ProxyboundGiveGamingSaraPacket());
     public static final Protocol<ProxyboundGiveSaraPacket, ProxyboundGiveSaraMessage> P_GIVE_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x03, new ProxyboundGiveSaraPacket());
@@ -51,7 +51,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     public static final Protocol<ProxyboundToggleSaraHidePacket, PlayerMessage> P_TOGGLE_SARA_HIDE = new Protocol<>(PacketFlow.TO_PROXY, 0x05, new ProxyboundToggleSaraHidePacket()); // Note that this is non-contextual
     public static final Protocol<ProxyboundToggleSaraShowPacket, PlayerWithServerMessage> P_TOGGLE_SARA_SHOW = new Protocol<>(PacketFlow.TO_PROXY, 0x06, new ProxyboundToggleSaraShowPacket()); // Note that this is contextual
 
-    public static final Protocol<ServerboundEncryptionPacket, PublicKeyMessage> S_ENCRYPTION = new Protocol<>(PacketFlow.TO_SERVER, 0x00, new ServerboundEncryptionPacket());
+    public static final Protocol<ServerboundEncryptionPacket, EncryptionMessage> S_ENCRYPTION = new Protocol<>(PacketFlow.TO_SERVER, 0x00, new ServerboundEncryptionPacket());
     public static final Protocol<ServerboundActionResponsePacket, ServerboundActionResponseMessage> S_ACTION_RESPONSE = new Protocol<>(PacketFlow.TO_SERVER, 0x01, new ServerboundActionResponsePacket());
 
     private final PacketFlow packetFlow;
@@ -168,9 +168,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
             Message message = handler.read(server, in);
             handler.handle(server, message);
         } catch (Exception | AssertionError e) {
-            Logger.getCurrentLogger().warn(
-                    "Failed to handle plugin message from server connection {} (player: {})",
-                    server.getServerInfo().getName(), server.getPlayer().getUniqueId(), e);
+            Logger.getCurrentLogger().warn("Failed to handle plugin message from " + server, e);
         }
     }
 
@@ -210,7 +208,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
             Message message = handler.read(in);
             handler.handle(sender, message);
         } catch (Exception | AssertionError e) {
-            Logger.getCurrentLogger().warn("Failed to handle plugin message from proxy", e);
+            Logger.getCurrentLogger().warn("Failed to handle plugin message from " + sender, e);
         }
     }
 

@@ -22,7 +22,7 @@ public class ToggleGamingSaraCommand implements Command {
                 sender.sendMessage(ChatColor.RED + "Usage: " + getFullUsage());
                 return;
             } else {
-                target = new PlayerImpl((org.bukkit.entity.Player) sender);
+                target = PlayerImpl.of((org.bukkit.entity.Player) sender);
             }
         }
         boolean res = Protocol.P_TOGGLE_GAMING_SARA.sendPacket(SpigotPlugin.getAnyPacketSender(), new PlayerMessage(target));

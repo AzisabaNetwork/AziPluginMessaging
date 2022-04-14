@@ -41,6 +41,11 @@ public final class SimplePlayer implements Player {
         // no-op
     }
 
+    @Override
+    public boolean isChallengeEquals(@NotNull String challenge) {
+        return false;
+    }
+
     @Contract("_ -> new")
     @NotNull
     public static SimplePlayer read(@NotNull DataInputStream in) throws IOException {

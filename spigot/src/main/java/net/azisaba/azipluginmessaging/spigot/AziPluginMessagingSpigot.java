@@ -42,14 +42,14 @@ public class AziPluginMessagingSpigot implements AziPluginMessaging {
     public @NotNull Optional<net.azisaba.azipluginmessaging.api.entity.Player> getPlayer(@NotNull UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return Optional.empty();
-        return Optional.of(new PlayerImpl(player));
+        return Optional.of(PlayerImpl.of(player));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> PlayerAdapter<T> getPlayerAdapter(@NotNull Class<T> clazz) {
         if (!Player.class.equals(clazz)) throw new IllegalArgumentException("This environment does not support " + clazz.getTypeName());
-        return (PlayerAdapter<T>) (PlayerAdapter<Player>) PlayerImpl::new;
+        return (PlayerAdapter<T>) (PlayerAdapter<Player>) PlayerImpl::of;
     }
 
     public static class ServerImpl implements Server {
@@ -58,7 +58,7 @@ public class AziPluginMessagingSpigot implements AziPluginMessaging {
             // prefer encrypted players (that is, player who is connected to the proxy where AziPluginMessaging is installed)
             List<PlayerImpl> players = Bukkit.getOnlinePlayers()
                     .stream()
-                    .map(PlayerImpl::new)
+                    .map(PlayerImpl::of)
                     .collect(Collectors.toList());
             if (players.size() == 0) throw new IllegalArgumentException("No player is online.");
             Optional<PlayerImpl> encryptedPlayer = players.stream().filter(PlayerImpl::isEncrypted).findAny();

@@ -8,6 +8,6 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 public class PluginMessageReceiver implements PluginMessageListener {
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        Protocol.handleServerSide(new PlayerImpl(player), message);
+        Protocol.handleServerSide(PlayerImpl.of(player), message);
     }
 }

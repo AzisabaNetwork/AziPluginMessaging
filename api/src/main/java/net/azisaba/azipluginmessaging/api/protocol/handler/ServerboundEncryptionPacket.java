@@ -1,25 +1,30 @@
 package net.azisaba.azipluginmessaging.api.protocol.handler;
 
 import net.azisaba.azipluginmessaging.api.Logger;
-import net.azisaba.azipluginmessaging.api.protocol.message.PublicKeyMessage;
+import net.azisaba.azipluginmessaging.api.entity.Player;
+import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.util.Constants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInputStream;
 
-public class ServerboundEncryptionPacket implements ServerMessageHandler<PublicKeyMessage> {
+public class ServerboundEncryptionPacket implements ServerMessageHandler<EncryptionMessage> {
     @Override
-    public @NotNull PublicKeyMessage read(@NotNull DataInputStream in) {
+    public @NotNull EncryptionMessage read(@NotNull DataInputStream in) {
         try {
-            return PublicKeyMessage.read(in);
+            return EncryptionMessage.read(in);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void handle(@NotNull PacketSender sender, @NotNull PublicKeyMessage msg) throws Exception {
+    public void handle(@NotNull PacketSender sender, @NotNull EncryptionMessage msg) throws Exception {
+        if (sender instanceof Player && !((Player) sender).isChallengeEquals(msg.getChallenge())) {
+            throw new RuntimeException("Challenge token does not match.");
+        }
+
         // Set the public key from the proxy
         sender.setRemotePublicKey(msg.getPublicKey());
 

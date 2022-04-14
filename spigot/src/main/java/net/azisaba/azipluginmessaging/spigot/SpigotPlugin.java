@@ -4,9 +4,10 @@ import net.azisaba.azipluginmessaging.api.AziPluginMessaging;
 import net.azisaba.azipluginmessaging.api.AziPluginMessagingProvider;
 import net.azisaba.azipluginmessaging.api.AziPluginMessagingProviderProvider;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
-import net.azisaba.azipluginmessaging.api.protocol.message.PublicKeyMessage;
+import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.util.EncryptionUtil;
+import net.azisaba.azipluginmessaging.api.util.TokenUtil;
 import net.azisaba.azipluginmessaging.spigot.command.AziPluginMessagingCommand;
 import net.azisaba.azipluginmessaging.spigot.entity.PlayerImpl;
 import org.bukkit.Bukkit;
@@ -36,8 +37,7 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, Protocol.LEGACY_CHANNEL_ID);
             Bukkit.getMessenger().registerIncomingPluginChannel(this, Protocol.LEGACY_CHANNEL_ID, new PluginMessageReceiver());
         } catch (IllegalArgumentException e) {
-            getLogger().info("Could not register legacy channel");
-            e.printStackTrace();
+            getLogger().info("Could not register legacy channel, you can ignore this message if you're running on 1.13+");
         }
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Protocol.CHANNEL_ID);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, Protocol.CHANNEL_ID, new PluginMessageReceiver());
@@ -61,7 +61,7 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            PlayerImpl player = new PlayerImpl(e.getPlayer());
+            PlayerImpl player = PlayerImpl.of(e.getPlayer());
 
             // set keypair
             player.setKeyPair(keyPair);
@@ -72,8 +72,10 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
             // set public key to null too
             player.setRemotePublicKeyInternal(null);
 
+            player.challenge = TokenUtil.generateNewToken();
+
             // send our public key
-            Protocol.P_ENCRYPTION.sendPacket(player, new PublicKeyMessage(keyPair.getPublic()));
+            Protocol.P_ENCRYPTION.sendPacket(player, new EncryptionMessage(player.challenge, keyPair.getPublic()));
         }, "AziPluginMessaging-" + e.getPlayer().getName()).start();
     }
 }

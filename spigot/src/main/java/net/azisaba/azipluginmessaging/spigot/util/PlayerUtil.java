@@ -27,7 +27,7 @@ public class PlayerUtil {
             UUID uuid = UUID.fromString(nameOrUUID);
             return new SimplePlayer(uuid, null);
         } catch (IllegalArgumentException ignored) {}
-        return new PlayerImpl(Objects.requireNonNull(Bukkit.getPlayerExact(nameOrUUID), "player " + nameOrUUID + " does not exist"));
+        return PlayerImpl.of(Objects.requireNonNull(Bukkit.getPlayerExact(nameOrUUID), "player " + nameOrUUID + " does not exist"));
     }
 
     public static @NotNull Player getOfflinePlayer(@NotNull String nameOrUUID) {
