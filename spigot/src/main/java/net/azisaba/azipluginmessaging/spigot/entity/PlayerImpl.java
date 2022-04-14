@@ -123,7 +123,7 @@ public class PlayerImpl implements Player, PacketSender {
         try {
             player.sendPluginMessage(SpigotPlugin.plugin, Protocol.CHANNEL_ID, data);
         } catch (IllegalArgumentException e) {
-            if (!success) throw new RuntimeException("Both Protocol.LEGACY_CHANNEL_ID and Protocol.CHANNEL_ID failed to send packet", e);
+            if (!success) throw new RuntimeException("Failed to send packet", e);
         }
     }
 }
