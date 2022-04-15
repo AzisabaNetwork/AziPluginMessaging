@@ -8,13 +8,17 @@ import net.azisaba.azipluginmessaging.api.util.Constants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInputStream;
+import java.io.IOException;
 
 public class ServerboundEncryptionPacket implements ServerMessageHandler<EncryptionMessage> {
     @Override
-    public @NotNull EncryptionMessage read(@NotNull DataInputStream in) {
+    public @NotNull EncryptionMessage read(@NotNull DataInputStream in) throws IOException {
         try {
             return EncryptionMessage.read(in);
         } catch (Exception e) {
+            if (e instanceof IOException) {
+                throw (IOException) e;
+            }
             throw new RuntimeException(e);
         }
     }

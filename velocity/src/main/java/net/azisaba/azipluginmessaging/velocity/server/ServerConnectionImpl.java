@@ -106,9 +106,11 @@ public class ServerConnectionImpl implements ServerConnection {
         this.publicKey = publicKey;
     }
 
-    @NotNull
     @Override
     public String toString() {
-        return "ServerConnectionImpl{handle=" + handle + '}';
+        return "ServerConnectionImpl{" +
+                "handle=" + handle +
+                ", encrypted=" + encrypted +
+                '}';
     }
 }

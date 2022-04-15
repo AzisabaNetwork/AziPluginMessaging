@@ -77,6 +77,9 @@ public class PlayerImpl implements Player, PacketSender {
     @Override
     public void setEncrypted(boolean encrypted) {
         this.encrypted = encrypted;
+
+        // clear challenge, so any new encryption requests will be denied.
+        this.challenge = null;
     }
 
     @Override

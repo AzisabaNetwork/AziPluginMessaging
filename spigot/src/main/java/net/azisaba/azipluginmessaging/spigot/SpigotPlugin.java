@@ -52,8 +52,7 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        // do inside the separate thread to avoid blocking main thread
-        new Thread(() -> {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
             KeyPair keyPair;
             try {
                 // generate keypair
@@ -76,6 +75,6 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
 
             // send our public key
             Protocol.P_ENCRYPTION.sendPacket(player, new EncryptionMessage(player.challenge, keyPair.getPublic()));
-        }, "AziPluginMessaging-" + e.getPlayer().getName()).start();
+        }, 20L);
     }
 }
