@@ -2,6 +2,7 @@ package net.azisaba.azipluginmessaging.api;
 
 import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
+import net.azisaba.azipluginmessaging.api.protocol.PacketQueue;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,6 +48,13 @@ public interface AziPluginMessaging {
      * @param <T> the player class
      */
     <T> PlayerAdapter<T> getPlayerAdapter(@NotNull Class<T> clazz);
+
+    /**
+     * Returns the packet queue.
+     * @return the packet queue
+     */
+    @NotNull
+    PacketQueue getPacketQueue();
 
     interface Proxy {
     }

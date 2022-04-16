@@ -1,5 +1,6 @@
 package net.azisaba.azipluginmessaging.api.protocol.handler;
 
+import net.azisaba.azipluginmessaging.api.AziPluginMessagingProvider;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
@@ -38,5 +39,7 @@ public class ServerboundEncryptionPacket implements ServerMessageHandler<Encrypt
         if (Constants.DEBUG) {
             Logger.getCurrentLogger().info("Encryption enabled for " + sender);
         }
+
+        AziPluginMessagingProvider.get().getPacketQueue().flush(sender);
     }
 }

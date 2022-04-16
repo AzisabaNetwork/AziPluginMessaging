@@ -18,7 +18,7 @@ public class GiveGamingSaraCommand implements Command {
             return;
         }
         Player target = PlayerUtil.getOfflinePlayer(args[0]);
-        boolean res = Protocol.P_GIVE_GAMING_SARA.sendPacket(SpigotPlugin.getAnyPacketSender(), new PlayerMessage(target));
+        boolean res = Protocol.P_GIVE_GAMING_SARA.sendPacket(SpigotPlugin.getAnyPacketSenderOrNull(), new PlayerMessage(target));
         if (res) {
             sender.sendMessage(ChatColor.GREEN + "Sent a request to give " + target.getUsername() + " the gaming sara");
         } else {

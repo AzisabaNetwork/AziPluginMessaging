@@ -16,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.security.KeyPair;
 import java.util.Objects;
@@ -48,6 +49,14 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
     @NotNull
     public static PacketSender getAnyPacketSender() {
         return AziPluginMessagingProvider.get().getServer().getPacketSender();
+    }
+
+    @Nullable
+    public static PacketSender getAnyPacketSenderOrNull() {
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
+            return null;
+        }
+        return ((AziPluginMessagingSpigot.ServerImpl) AziPluginMessagingProvider.get().getServer()).getPacketSenderOrNull();
     }
 
     @EventHandler

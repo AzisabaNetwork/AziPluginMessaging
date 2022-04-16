@@ -1,5 +1,6 @@
 package net.azisaba.azipluginmessaging.api.protocol;
 
+import net.azisaba.azipluginmessaging.api.AziPluginMessagingProvider;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.protocol.handler.MessageHandler;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyMessageHandler;
@@ -100,13 +101,22 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
 
     /**
      * Attempt to send a packet.
-     * @param sender the packet sender to send the packet from.
+     * @param sender the packet sender to send the packet from. if null, the packet will always be queued.
      * @param msg the message to send
      * @return true if the message was sent successfully, false otherwise.
      */
-    public boolean sendPacket(@NotNull PacketSender sender, @NotNull M msg) {
-        if (id != 0 && !sender.isEncrypted()) {
-            throw new IllegalStateException("Cannot send packet " + id + " without encryption");
+    public boolean sendPacket(@Nullable PacketSender sender, @NotNull M msg) {
+        if (id != 0 && (sender == null || !sender.isEncrypted())) {
+            if (this.getPacketFlow() == PacketFlow.TO_SERVER) {
+                throw new IllegalStateException("Cannot send packet " + id + " without encryption");
+            }
+            // usually it should get executed soon after the encryption is done
+            AziPluginMessagingProvider.get().getPacketQueue().add(this, msg);
+            Logger.getCurrentLogger().info("Queued packet " + id + " to send after encryption (sender: {})", sender);
+            return true;
+        }
+        if (sender == null) {
+            throw new IllegalArgumentException("Cannot send packet " + id + " without sender");
         }
         try (ByteArrayOutputStream bout = new ByteArrayOutputStream();
              DataOutputStream out = new DataOutputStream(bout)) {

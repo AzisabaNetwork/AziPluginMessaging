@@ -2,14 +2,11 @@ package net.azisaba.azipluginmessaging.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.azisaba.azipluginmessaging.api.AziPluginMessaging;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
-import net.azisaba.azipluginmessaging.api.protocol.Protocol;
-import net.azisaba.azipluginmessaging.api.server.PacketSender;
+import net.azisaba.azipluginmessaging.api.protocol.PacketQueue;
 import net.azisaba.azipluginmessaging.velocity.entity.PlayerImpl;
-import net.azisaba.azipluginmessaging.velocity.server.ServerConnectionImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -51,6 +48,11 @@ public class AziPluginMessagingVelocity implements AziPluginMessaging {
     public <T> PlayerAdapter<T> getPlayerAdapter(@NotNull Class<T> clazz) {
         if (!Player.class.equals(clazz)) throw new IllegalArgumentException("This environment does not support " + clazz.getTypeName());
         return (PlayerAdapter<T>) (PlayerAdapter<Player>) PlayerImpl::new;
+    }
+
+    @Override
+    public @NotNull PacketQueue getPacketQueue() {
+        return PacketQueue.EMPTY;
     }
 
     public static class ProxyImpl implements Proxy {

@@ -19,7 +19,7 @@ public class GiveSaraCommand implements Command {
         }
         int amount = Integer.parseInt(args[0]);
         Player target = PlayerUtil.getOfflinePlayer(args[1]);
-        boolean res = Protocol.P_GIVE_SARA.sendPacket(SpigotPlugin.getAnyPacketSender(), new ProxyboundGiveSaraMessage(amount, target));
+        boolean res = Protocol.P_GIVE_SARA.sendPacket(SpigotPlugin.getAnyPacketSenderOrNull(), new ProxyboundGiveSaraMessage(amount, target));
         if (res) {
             sender.sendMessage(ChatColor.GREEN + "Sent a request to give " + target.getUsername() + " the " + amount + "yen sara");
         } else {
