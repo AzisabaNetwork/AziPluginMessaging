@@ -6,6 +6,7 @@ import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
 import net.azisaba.azipluginmessaging.api.server.ServerInfo;
+import net.azisaba.azipluginmessaging.api.util.EncryptionUtil;
 import net.azisaba.azipluginmessaging.velocity.entity.PlayerImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -111,6 +112,8 @@ public class ServerConnectionImpl implements ServerConnection {
         return "ServerConnectionImpl{" +
                 "handle=" + handle +
                 ", encrypted=" + encrypted +
+                ", publicKey=" + EncryptionUtil.encodePublicKey(keyPair.getPublic()) +
+                ", remotePublicKey=" + EncryptionUtil.encodePublicKey(publicKey) +
                 '}';
     }
 }

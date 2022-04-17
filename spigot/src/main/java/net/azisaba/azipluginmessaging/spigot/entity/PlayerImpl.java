@@ -3,6 +3,7 @@ package net.azisaba.azipluginmessaging.spigot.entity;
 import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
+import net.azisaba.azipluginmessaging.api.util.EncryptionUtil;
 import net.azisaba.azipluginmessaging.spigot.SpigotPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -113,6 +114,8 @@ public class PlayerImpl implements Player, PacketSender {
     public String toString() {
         return "PlayerImpl{" +
                 "handle=" + handle +
+                ", publicKey=" + EncryptionUtil.encodePublicKey(keyPair.getPublic()) +
+                ", remotePublicKey=" + EncryptionUtil.encodePublicKey(remotePublicKey) +
                 ", encrypted=" + encrypted +
                 '}';
     }
