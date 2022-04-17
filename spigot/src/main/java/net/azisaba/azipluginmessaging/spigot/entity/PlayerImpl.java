@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PlayerImpl implements Player, PacketSender {
     private static final Map<UUID, PlayerImpl> MAP = new ConcurrentHashMap<>();
@@ -23,6 +24,7 @@ public class PlayerImpl implements Player, PacketSender {
     private PublicKey remotePublicKey;
     private boolean encrypted = false;
     public String challenge = null;
+    public AtomicInteger joins = new AtomicInteger();
 
     @Contract(value = "null -> fail", pure = true)
     private PlayerImpl(@Nullable org.bukkit.entity.Player handle) {

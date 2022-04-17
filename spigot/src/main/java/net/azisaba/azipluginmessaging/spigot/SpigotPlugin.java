@@ -61,7 +61,15 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        PlayerImpl player = PlayerImpl.of(e.getPlayer());
+        player.setEncrypted(false);
+        player.setRemotePublicKeyInternal(null);
+        int i = player.joins.incrementAndGet();
         Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
+            if (player.joins.get() != i) {
+                return;
+            }
+
             KeyPair keyPair;
             try {
                 // generate keypair
@@ -69,7 +77,6 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            PlayerImpl player = PlayerImpl.of(e.getPlayer());
 
             // set keypair
             player.setKeyPair(keyPair);
