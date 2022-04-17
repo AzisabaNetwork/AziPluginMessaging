@@ -26,5 +26,6 @@ public class SimplePacketQueue extends PacketQueue {
         for (Map.Entry<Protocol<?, ? extends Message>, ? extends Message> entry : list) {
             ((Protocol) entry.getKey()).sendPacket(sender, entry.getValue());
         }
+        list.clear();
     }
 }
