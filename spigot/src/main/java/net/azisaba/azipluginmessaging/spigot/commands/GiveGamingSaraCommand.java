@@ -17,13 +17,15 @@ public class GiveGamingSaraCommand implements Command {
             sender.sendMessage(ChatColor.RED + "Usage: " + getFullUsage());
             return;
         }
-        Player target = PlayerUtil.getOfflinePlayer(args[0]);
-        boolean res = Protocol.P_GIVE_GAMING_SARA.sendPacket(SpigotPlugin.getAnyPacketSenderOrNull(), new PlayerMessage(target));
-        if (res) {
-            sender.sendMessage(ChatColor.GREEN + "Sent a request to give " + target.getUsername() + " the gaming sara");
-        } else {
-            sender.sendMessage(ChatColor.RED + "Failed to send the packet (attempted to give " + target.getUsernameOrUniqueId() + " the gaming sara). Maybe check console for errors?");
-        }
+        new Thread(() -> {
+            Player target = PlayerUtil.getOfflinePlayer(args[0]);
+            boolean res = Protocol.P_GIVE_GAMING_SARA.sendPacket(SpigotPlugin.getAnyPacketSenderOrNull(), new PlayerMessage(target));
+            if (res) {
+                sender.sendMessage(ChatColor.GREEN + "Sent a request to give " + target.getUsername() + " the gaming sara");
+            } else {
+                sender.sendMessage(ChatColor.RED + "Failed to send the packet (attempted to give " + target.getUsernameOrUniqueId() + " the gaming sara). Maybe check console for errors?");
+            }
+        }).start();
     }
 
     @Override

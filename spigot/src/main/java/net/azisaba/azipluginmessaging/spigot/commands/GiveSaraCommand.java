@@ -18,13 +18,15 @@ public class GiveSaraCommand implements Command {
             return;
         }
         int amount = Integer.parseInt(args[0]);
-        Player target = PlayerUtil.getOfflinePlayer(args[1]);
-        boolean res = Protocol.P_GIVE_SARA.sendPacket(SpigotPlugin.getAnyPacketSenderOrNull(), new ProxyboundGiveSaraMessage(amount, target));
-        if (res) {
-            sender.sendMessage(ChatColor.GREEN + "Sent a request to give " + target.getUsername() + " the " + amount + "yen sara");
-        } else {
-            sender.sendMessage(ChatColor.RED + "Failed to send the packet (attempted to give " + target.getUsernameOrUniqueId() + " the " + amount + "yen sara). Maybe check console for errors?");
-        }
+        new Thread(() -> {
+            Player target = PlayerUtil.getOfflinePlayer(args[1]);
+            boolean res = Protocol.P_GIVE_SARA.sendPacket(SpigotPlugin.getAnyPacketSenderOrNull(), new ProxyboundGiveSaraMessage(amount, target));
+            if (res) {
+                sender.sendMessage(ChatColor.GREEN + "Sent a request to give " + target.getUsername() + " the " + amount + "yen sara");
+            } else {
+                sender.sendMessage(ChatColor.RED + "Failed to send the packet (attempted to give " + target.getUsernameOrUniqueId() + " the " + amount + "yen sara). Maybe check console for errors?");
+            }
+        }).start();
     }
 
     @Override
