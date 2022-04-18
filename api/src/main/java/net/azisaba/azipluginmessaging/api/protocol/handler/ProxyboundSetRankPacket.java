@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -45,8 +46,18 @@ public class ProxyboundSetRankPacket implements ProxyMessageHandler<ProxyboundSe
         if (!track.containsGroup(msg.getRank())) {
             throw new IllegalArgumentException("Group is not in a track: " + msg.getRank());
         }
-        boolean modified = false;
         NodeMap nodes = user.getData(DataType.NORMAL);
+        List<String> groups = track.getGroups();
+        int rankIndex = groups.indexOf(msg.getRank());
+        for (String group : groups) {
+            if (LuckPermsUtil.findNode(nodes, group, msg.getServer()) != null) {
+                if (groups.indexOf(group) >= rankIndex) {
+                    throw new IllegalArgumentException(msg.getPlayer().getUsernameOrUniqueId() +
+                            " already inherits the same or higher rank in the track: " + msg.getRank());
+                }
+            }
+        }
+        boolean modified = false;
         for (String group : track.getGroups()) {
             if (msg.getServer().equals(group)) continue;
             Node node = LuckPermsUtil.findNode(nodes, group, msg.getServer());
