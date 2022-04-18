@@ -116,8 +116,8 @@ public class PlayerImpl implements Player, PacketSender {
     public String toString() {
         return "PlayerImpl{" +
                 "handle=" + handle +
-                ", publicKey=" + EncryptionUtil.encodePublicKey(keyPair.getPublic()) +
-                ", remotePublicKey=" + EncryptionUtil.encodePublicKey(remotePublicKey) +
+                ", publicKey=" + (keyPair == null ? null : EncryptionUtil.encodePublicKey(keyPair.getPublic())) +
+                ", remotePublicKey=" + (remotePublicKey == null ? null : EncryptionUtil.encodePublicKey(remotePublicKey)) +
                 ", encrypted=" + encrypted +
                 '}';
     }

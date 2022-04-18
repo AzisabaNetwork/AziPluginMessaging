@@ -112,8 +112,8 @@ public class ServerConnectionImpl implements ServerConnection {
         return "ServerConnectionImpl{" +
                 "handle=" + handle +
                 ", encrypted=" + encrypted +
-                ", publicKey=" + EncryptionUtil.encodePublicKey(keyPair.getPublic()) +
-                ", remotePublicKey=" + EncryptionUtil.encodePublicKey(publicKey) +
+                ", publicKey=" + (keyPair == null ? null : EncryptionUtil.encodePublicKey(keyPair.getPublic())) +
+                ", remotePublicKey=" + (publicKey == null ? null : EncryptionUtil.encodePublicKey(publicKey)) +
                 '}';
     }
 }
