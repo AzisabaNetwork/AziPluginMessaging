@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AziPluginMessagingConfig {
     public static final Map<String, String> saraShowServers = new ConcurrentHashMap<>();
     public static final Map<String, String> rankableServers = new ConcurrentHashMap<>();
+    public static boolean debug = false;
 
     /**
      * Reloads all configuration from config file.
@@ -33,12 +34,16 @@ public class AziPluginMessagingConfig {
                 Files.write(
                         configPath,
                         Arrays.asList(
-                                "saraShowServers:",
+                                "saraShowServers: # this is meaningless in spigot",
                                 "  life: life",
                                 "  lifepve: life",
-                                "rankableServers:",
+                                "rankableServers: # this is meaningless in spigot",
                                 "  life: life",
-                                "  lifepve: life"
+                                "  lifepve: life",
+                                "",
+                                "# Whether to enable the debug logging.",
+                                "# If turned on, many things will be logged, including public key of a connection and packet in/out, for example.",
+                                "debug: false"
                         ),
                         StandardOpenOption.CREATE
                 );
@@ -50,6 +55,7 @@ public class AziPluginMessagingConfig {
             YamlObject obj = new YamlConfiguration(configPath.toAbsolutePath().toString()).asObject();
             readMap(rankableServers, obj, "rankableServers");
             readMap(saraShowServers, obj, "saraShowServers");
+            debug = obj.getBoolean("debug", false);
         } catch (IOException ex) {
             Logger.getCurrentLogger().warn("Failed to read config.yml", ex);
         }

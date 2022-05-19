@@ -1,11 +1,11 @@
 package net.azisaba.azipluginmessaging.api.protocol.handler;
 
+import net.azisaba.azipluginmessaging.api.AziPluginMessagingConfig;
 import net.azisaba.azipluginmessaging.api.AziPluginMessagingProvider;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
-import net.azisaba.azipluginmessaging.api.util.Constants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInputStream;
@@ -36,7 +36,7 @@ public class ServerboundEncryptionPacket implements ServerMessageHandler<Encrypt
         // Enable encryption
         sender.setEncrypted(true);
 
-        if (Constants.DEBUG) {
+        if (AziPluginMessagingConfig.debug) {
             Logger.getCurrentLogger().info("Encryption enabled for " + sender);
         }
 

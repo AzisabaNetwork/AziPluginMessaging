@@ -1,11 +1,11 @@
 package net.azisaba.azipluginmessaging.api.protocol.handler;
 
+import net.azisaba.azipluginmessaging.api.AziPluginMessagingConfig;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
 import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
-import net.azisaba.azipluginmessaging.api.util.Constants;
 import net.azisaba.azipluginmessaging.api.util.EncryptionUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +43,7 @@ public class ProxyboundEncryptionPacket implements ProxyMessageHandler<Encryptio
         // Enable encryption
         sender.setEncrypted(true);
 
-        if (Constants.DEBUG) {
+        if (AziPluginMessagingConfig.debug) {
             Logger.getCurrentLogger().info("Encryption enabled for " + sender);
         }
     }

@@ -1,6 +1,7 @@
 package net.azisaba.azipluginmessaging.spigot;
 
 import net.azisaba.azipluginmessaging.api.AziPluginMessaging;
+import net.azisaba.azipluginmessaging.api.AziPluginMessagingConfig;
 import net.azisaba.azipluginmessaging.api.AziPluginMessagingProvider;
 import net.azisaba.azipluginmessaging.api.AziPluginMessagingProviderProvider;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
@@ -29,6 +30,7 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
         plugin = this;
         AziPluginMessaging api = new AziPluginMessagingSpigot(this);
         AziPluginMessagingProviderProvider.register(api);
+        AziPluginMessagingConfig.reload();
     }
 
     @Override
@@ -39,6 +41,9 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
             Bukkit.getMessenger().registerIncomingPluginChannel(this, Protocol.LEGACY_CHANNEL_ID, new PluginMessageReceiver());
         } catch (IllegalArgumentException e) {
             getLogger().info("Could not register legacy channel, you can ignore this message if you're running on 1.13+");
+            if (AziPluginMessagingConfig.debug) {
+                e.printStackTrace();
+            }
         }
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Protocol.CHANNEL_ID);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, Protocol.CHANNEL_ID, new PluginMessageReceiver());

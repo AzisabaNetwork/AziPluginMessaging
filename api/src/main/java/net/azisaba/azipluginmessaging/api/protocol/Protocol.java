@@ -1,5 +1,6 @@
 package net.azisaba.azipluginmessaging.api.protocol;
 
+import net.azisaba.azipluginmessaging.api.AziPluginMessagingConfig;
 import net.azisaba.azipluginmessaging.api.AziPluginMessagingProvider;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.protocol.handler.MessageHandler;
@@ -23,7 +24,6 @@ import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundSetRankMess
 import net.azisaba.azipluginmessaging.api.protocol.message.ServerboundActionResponseMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
-import net.azisaba.azipluginmessaging.api.util.Constants;
 import net.azisaba.azipluginmessaging.api.util.EncryptionUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -130,7 +130,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
                     throw new RuntimeException("Could not encrypt the packet (sender: " + sender + ")", e);
                 }
             }
-            if (Constants.DEBUG) {
+            if (AziPluginMessagingConfig.debug) {
                 String hex = Integer.toString(id, 16);
                 if (hex.length() == 1) hex = '0' + hex;
                 Logger.getCurrentLogger().info("Sending packet {} (0x{}) to {} (encrypted: {})", id, hex, sender, sender.isEncrypted());
@@ -171,7 +171,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
                         server, id);
                 return;
             }
-            if (Constants.DEBUG) {
+            if (AziPluginMessagingConfig.debug) {
                 String hex = Integer.toString(id, 16);
                 if (hex.length() == 1) hex = '0' + hex;
                 Logger.getCurrentLogger().info("Received packet {} (0x{}) from server connection {} (encrypted: {})", id, hex, server, server.isEncrypted());
@@ -214,7 +214,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
                 Logger.getCurrentLogger().warn("Received unknown protocol id from {}: {}", sender, id);
                 return;
             }
-            if (Constants.DEBUG) {
+            if (AziPluginMessagingConfig.debug) {
                 String hex = Integer.toString(id, 16);
                 if (hex.length() == 1) hex = '0' + hex;
                 Logger.getCurrentLogger().info("Received packet {} (0x{}) from {}", id, hex, sender);
