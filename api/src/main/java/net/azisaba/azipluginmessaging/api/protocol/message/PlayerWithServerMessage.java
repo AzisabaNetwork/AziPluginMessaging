@@ -18,7 +18,7 @@ import java.util.UUID;
 public class PlayerWithServerMessage extends PlayerMessage {
     protected final String server;
 
-    public PlayerWithServerMessage(@NotNull String server, @NotNull Player player) {
+    public PlayerWithServerMessage(@Nullable String server, @NotNull Player player) {
         super(player);
         this.server = server;
     }
@@ -27,9 +27,14 @@ public class PlayerWithServerMessage extends PlayerMessage {
         this("global", player);
     }
 
+    /**
+     * Gets the server name.
+     * @return the server
+     * @throws NullPointerException if server is null
+     */
     @NotNull
     public String getServer() {
-        return server;
+        return Objects.requireNonNull(server, "server is null");
     }
 
     @Override

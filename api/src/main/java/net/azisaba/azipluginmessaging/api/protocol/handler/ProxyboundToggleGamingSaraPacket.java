@@ -36,13 +36,13 @@ public class ProxyboundToggleGamingSaraPacket implements ProxyMessageHandler<Pla
         }
         String username = user.getUsername();
         NodeMap map = user.getData(DataType.NORMAL);
-        Node nodeChangeGamingSara = LuckPermsUtil.findNode(map, "changegamingsara", null);
+        Node nodeChangeGamingSara = LuckPermsUtil.findParentNode(map, "changegamingsara", null);
         if (nodeChangeGamingSara == null) {
             Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7c権限がありません。皿を持ってるのにこのメッセージが出る場合はPerfectBoat#0001に泣きつきましょう！"));
             throw new MissingPermissionException("User " + msg.getPlayer().getUniqueId() + " does not have the group 'changegamingsara'.");
         }
         char p;
-        Node nodeGamingSara = LuckPermsUtil.findNode(map, "gamingsara", null);
+        Node nodeGamingSara = LuckPermsUtil.findParentNode(map, "gamingsara", null);
         if (nodeGamingSara != null) {
             map.remove(nodeGamingSara);
             Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7aゲーミング皿を非表示にしました。"));

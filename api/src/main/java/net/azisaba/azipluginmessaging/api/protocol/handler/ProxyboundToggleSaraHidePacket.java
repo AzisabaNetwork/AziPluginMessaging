@@ -39,8 +39,8 @@ public class ProxyboundToggleSaraHidePacket implements ProxyMessageHandler<Playe
         NodeMap map = user.getData(DataType.NORMAL);
         boolean modified = false;
         for (int saraGroup : Constants.SARA_GROUPS) {
-            Node nodeSara = LuckPermsUtil.findNode(map, saraGroup + "yen", null);
-            Node nodeHideSara = LuckPermsUtil.findNode(map, "hide" + saraGroup, null);
+            Node nodeSara = LuckPermsUtil.findParentNode(map, saraGroup + "yen", null);
+            Node nodeHideSara = LuckPermsUtil.findParentNode(map, "hide" + saraGroup, null);
             String desc = null;
             if (nodeSara != null) {
                 // hide

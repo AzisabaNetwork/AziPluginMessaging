@@ -35,7 +35,6 @@ public class ProxyboundSetRankPacket implements ProxyMessageHandler<ProxyboundSe
 
     @Override
     public void handle(@NotNull PacketSender sender, @NotNull ProxyboundSetRankMessage msg) {
-        Objects.requireNonNull(msg.getServer(), "server cannot be null");
         LuckPerms api = LuckPermsProvider.get();
         User user = api.getUserManager().loadUser(msg.getPlayer().getUniqueId()).join();
         if (user == null || user.getUsername() == null) {
@@ -50,7 +49,7 @@ public class ProxyboundSetRankPacket implements ProxyMessageHandler<ProxyboundSe
         List<String> groups = track.getGroups();
         int rankIndex = groups.indexOf(msg.getRank());
         for (String group : groups) {
-            if (LuckPermsUtil.findNode(nodes, group, msg.getServer()) != null) {
+            if (LuckPermsUtil.findParentNode(nodes, group, msg.getServer()) != null) {
                 if (groups.indexOf(group) >= rankIndex) {
                     throw new IllegalArgumentException(msg.getPlayer().getUsernameOrUniqueId() +
                             " already inherits the same or higher rank in the track: " + msg.getRank());
@@ -60,13 +59,13 @@ public class ProxyboundSetRankPacket implements ProxyMessageHandler<ProxyboundSe
         boolean modified = false;
         for (String group : track.getGroups()) {
             if (msg.getServer().equals(group)) continue;
-            Node node = LuckPermsUtil.findNode(nodes, group, msg.getServer());
+            Node node = LuckPermsUtil.findParentNode(nodes, group, msg.getServer());
             if (node != null) {
                 nodes.remove(node);
                 modified = true;
             }
         }
-        Node node = LuckPermsUtil.findNode(nodes, msg.getRank(), msg.getServer());
+        Node node = LuckPermsUtil.findParentNode(nodes, msg.getRank(), msg.getServer());
         if (node == null) {
             nodes.add(InheritanceNode.builder().group(msg.getRank()).context(ImmutableContextSet.of("server", msg.getServer())).build());
             modified = true;

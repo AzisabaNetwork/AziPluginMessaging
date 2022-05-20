@@ -35,12 +35,12 @@ public class ProxyboundGiveGamingSaraPacket implements ProxyMessageHandler<Playe
         String username = user.getUsername();
         boolean modified = false;
         NodeMap map = user.getData(DataType.NORMAL);
-        Node nodeGamingSara = LuckPermsUtil.findNode(map, "gamingsara", null);
+        Node nodeGamingSara = LuckPermsUtil.findParentNode(map, "gamingsara", null);
         if (nodeGamingSara == null) {
             LuckPermsUtil.addGroup(map, "gamingsara", null, -1);
             modified = true;
         }
-        Node nodeChangeGamingSara = LuckPermsUtil.findNode(map, "changegamingsara", null);
+        Node nodeChangeGamingSara = LuckPermsUtil.findParentNode(map, "changegamingsara", null);
         if (nodeChangeGamingSara == null) {
             LuckPermsUtil.addGroup(map, "changegamingsara", null, -1);
             modified = true;

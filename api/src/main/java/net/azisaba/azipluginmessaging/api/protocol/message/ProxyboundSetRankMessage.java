@@ -17,13 +17,13 @@ import java.util.Objects;
 public class ProxyboundSetRankMessage extends PlayerWithServerMessage {
     protected final String rank;
 
-    public ProxyboundSetRankMessage(@NotNull String server, @NotNull String rank, @NotNull Player player) {
+    public ProxyboundSetRankMessage(@Nullable String server, @NotNull String rank, @NotNull Player player) {
         super(server, player);
         this.rank = Objects.requireNonNull(rank, "rank cannot be null");
     }
 
     public ProxyboundSetRankMessage(@NotNull String rank, @NotNull Player player) {
-        this("global", rank, player);
+        this(null, rank, player);
     }
 
     @NotNull

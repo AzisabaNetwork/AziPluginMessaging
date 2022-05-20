@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "net.azisaba.azipluginmessaging"
-version = "2.1.3"
+version = "2.2.0-SNAPSHOT"
 
 repositories {
     mavenCentral()

@@ -40,7 +40,7 @@ public class ProxyboundGiveSaraPacket implements ProxyMessageHandler<ProxyboundG
         String username = user.getUsername();
         boolean modified = false;
         NodeMap map = user.getData(DataType.NORMAL);
-        Node nodeSara = LuckPermsUtil.findNode(map, msg.getAmount() + "yen", null);
+        Node nodeSara = LuckPermsUtil.findParentNode(map, msg.getAmount() + "yen", null);
         if (nodeSara == null) {
             LuckPermsUtil.addGroup(map, msg.getAmount() + "yen", null, -1);
             modified = true;

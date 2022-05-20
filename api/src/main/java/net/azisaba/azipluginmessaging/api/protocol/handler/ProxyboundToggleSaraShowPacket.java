@@ -35,7 +35,6 @@ public class ProxyboundToggleSaraShowPacket implements ProxyMessageHandler<Playe
 
     @Override
     public void handle(@NotNull PacketSender sender, @NotNull PlayerWithServerMessage msg) {
-        Objects.requireNonNull(msg.getServer(), "server cannot be null");
         LuckPerms api = LuckPermsProvider.get();
         User user = api.getUserManager().loadUser(msg.getPlayer().getUniqueId()).join();
         if (user == null || user.getUsername() == null) {
@@ -45,11 +44,11 @@ public class ProxyboundToggleSaraShowPacket implements ProxyMessageHandler<Playe
         NodeMap map = user.getData(DataType.NORMAL);
         boolean modified = false;
         for (int saraGroup : Constants.SARA_GROUPS) {
-            Node nodeSara = LuckPermsUtil.findNode(map, saraGroup + "yen", null);
-            Node nodeHideSara = LuckPermsUtil.findNode(map, "hide" + saraGroup, null);
+            Node nodeSara = LuckPermsUtil.findParentNode(map, saraGroup + "yen", null);
+            Node nodeHideSara = LuckPermsUtil.findParentNode(map, "hide" + saraGroup, null);
             if (nodeSara != null || nodeHideSara != null) {
                 String actionDesc;
-                Node nodeSaraShow = LuckPermsUtil.findNode(map, "show" + saraGroup + "yen", msg.getServer());
+                Node nodeSaraShow = LuckPermsUtil.findParentNode(map, "show" + saraGroup + "yen", msg.getServer());
                 if (nodeSaraShow != null) {
                     // hide
                     map.remove(nodeSaraShow);

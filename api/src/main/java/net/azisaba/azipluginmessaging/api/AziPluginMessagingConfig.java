@@ -14,14 +14,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AziPluginMessagingConfig {
+    // Common
+    public static boolean debug = false;
+
+    // Spigot
+
+    // Velocity
+    public static final Map<String, String> servers = new ConcurrentHashMap<>();
     public static final Map<String, String> saraShowServers = new ConcurrentHashMap<>();
     public static final Map<String, String> rankableServers = new ConcurrentHashMap<>();
-    public static boolean debug = false;
 
     /**
      * Reloads all configuration from config file.
      */
     public static void reload() {
+        debug = false;
+        servers.clear();
         saraShowServers.clear();
         rankableServers.clear();
         Path dataDirectory = new File("plugins/AziPluginMessaging").toPath();
@@ -34,16 +42,56 @@ public class AziPluginMessagingConfig {
                 Files.write(
                         configPath,
                         Arrays.asList(
-                                "saraShowServers: # this is meaningless in spigot",
-                                "  life: life",
-                                "  lifepve: life",
-                                "rankableServers: # this is meaningless in spigot",
-                                "  life: life",
-                                "  lifepve: life",
+                                "#",
+                                "# AziPluginMessaging configuration",
+                                "#",
+                                "",
+                                "##############################",
+                                "#    Common configuration    #",
+                                "##############################",
+                                "#",
+                                "# These configurations are used by both Spigot and Velocity sides.",
+                                "#",
                                 "",
                                 "# Whether to enable the debug logging.",
                                 "# If turned on, many things will be logged, including public key of a connection and packet in/out, for example.",
-                                "debug: false"
+                                "debug: false",
+                                "",
+                                "##############################",
+                                "#    Spigot configuration    #",
+                                "##############################",
+                                "#",
+                                "# These configurations are only used by Spigot side and ignored entirely by Velocity side.",
+                                "#",
+                                "",
+                                "# well, there is nothing, for now.",
+                                "",
+                                "##############################",
+                                "#   Velocity configuration   #",
+                                "##############################",
+                                "#",
+                                "# These configurations are only used by Velocity side and ignored entirely by Spigot side.",
+                                "#",
+                                "",
+                                "# Map of servers (server name in velocity: server name in LuckPerms)",
+                                "# This is used for situations where saraShowServers/rankableServers does not apply.",
+                                "# This map is used in:",
+                                "# - ProxyboundSetPrefixPacket",
+                                "servers: # this is meaningless in spigot",
+                                "  life: life",
+                                "  lifepve: life",
+                                "",
+                                "# Map of servers that ProxyboundToggleSaraShowPacket is allowed on.",
+                                "# When the proxy receives a packet from non-enabled server, the proxy will drop the packet.",
+                                "saraShowServers: # this is meaningless in spigot",
+                                "  life: life",
+                                "  lifepve: life",
+                                "",
+                                "# Map of servers that ProxyboundSetRankPacket is allowed on.",
+                                "# When the proxy receives a packet from non-enabled server, the proxy will drop the packet.",
+                                "rankableServers: # this is meaningless in spigot",
+                                "  life: life",
+                                "  lifepve: life"
                         ),
                         StandardOpenOption.CREATE
                 );
@@ -53,9 +101,10 @@ public class AziPluginMessagingConfig {
         }
         try {
             YamlObject obj = new YamlConfiguration(configPath.toAbsolutePath().toString()).asObject();
+            debug = obj.getBoolean("debug", false);
+            readMap(servers, obj, "servers");
             readMap(rankableServers, obj, "rankableServers");
             readMap(saraShowServers, obj, "saraShowServers");
-            debug = obj.getBoolean("debug", false);
         } catch (IOException ex) {
             Logger.getCurrentLogger().warn("Failed to read config.yml", ex);
         }
