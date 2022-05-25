@@ -55,8 +55,8 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     public static final Protocol<ProxyboundToggleGamingSaraPacket, PlayerMessage> P_TOGGLE_GAMING_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x04, new ProxyboundToggleGamingSaraPacket());
     public static final Protocol<ProxyboundToggleSaraHidePacket, PlayerMessage> P_TOGGLE_SARA_HIDE = new Protocol<>(PacketFlow.TO_PROXY, 0x05, new ProxyboundToggleSaraHidePacket()); // non-contextual
     public static final Protocol<ProxyboundToggleSaraShowPacket, PlayerWithServerMessage> P_TOGGLE_SARA_SHOW = new Protocol<>(PacketFlow.TO_PROXY, 0x06, new ProxyboundToggleSaraShowPacket()); // contextual
-    public static final Protocol<ProxyboundSetPrefixPacket, ProxyboundSetPrefixMessage> P_SET_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x06, new ProxyboundSetPrefixPacket());
-    public static final Protocol<ProxyboundClearPrefixPacket, ProxyboundClearPrefixMessage> P_CLEAR_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x06, new ProxyboundClearPrefixPacket());
+    public static final Protocol<ProxyboundSetPrefixPacket, ProxyboundSetPrefixMessage> P_SET_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x07, new ProxyboundSetPrefixPacket());
+    public static final Protocol<ProxyboundClearPrefixPacket, ProxyboundClearPrefixMessage> P_CLEAR_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x08, new ProxyboundClearPrefixPacket());
 
     public static final Protocol<ServerboundEncryptionPacket, EncryptionMessage> S_ENCRYPTION = new Protocol<>(PacketFlow.TO_SERVER, 0x00, new ServerboundEncryptionPacket());
     public static final Protocol<ServerboundActionResponsePacket, ServerboundActionResponseMessage> S_ACTION_RESPONSE = new Protocol<>(PacketFlow.TO_SERVER, 0x01, new ServerboundActionResponsePacket());
