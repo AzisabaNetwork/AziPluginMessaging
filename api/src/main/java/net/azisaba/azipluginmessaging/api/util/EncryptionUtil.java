@@ -10,7 +10,13 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.RSAKeyGenParameterSpec;
 
+/**
+ * Represents a utility class for encryption.
+ */
 public class EncryptionUtil {
+    /**
+     * Algorithm to use for encrypting and decrypting packets.
+     */
     public static final String ALGORITHM = "RSA";
 
     /**
@@ -56,11 +62,22 @@ public class EncryptionUtil {
         return cipher.doFinal(data);
     }
 
+    /**
+     * Encodes the public key as base64 string.
+     * @param key The key to encode
+     * @return The base64 string
+     */
     @Contract("_ -> new")
     public static @NotNull String encodePublicKey(@NotNull PublicKey key) {
         return Base64Util.encode(key.getEncoded());
     }
 
+    /**
+     * Decodes the base64 string to a public key.
+     * @param key The base64 string
+     * @return The public key
+     * @throws Exception If a public key could not be decoded for any reason
+     */
     @Contract("_ -> new")
     public static @NotNull PublicKey decodePublicKey(@NotNull String key) throws Exception {
         return KeyFactoryUtil.getPublicKey(Base64Util.decode(key));

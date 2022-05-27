@@ -45,7 +45,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     private static final Map<Byte, Protocol<?, ?>> TO_PROXY_BY_ID = new ConcurrentHashMap<>();
     private static final Map<Byte, Protocol<?, ?>> TO_SERVER_BY_ID = new ConcurrentHashMap<>();
+
+    /**
+     * Legacy plugin channel id
+     */
     public static final String LEGACY_CHANNEL_ID = "AziPluginMessaging";
+
+    /**
+     * Modern plugin channel id
+     */
     public static final String CHANNEL_ID = "azipm:main";
 
     public static final Protocol<ProxyboundEncryptionPacket, EncryptionMessage> P_ENCRYPTION = new Protocol<>(PacketFlow.TO_PROXY, 0x00, new ProxyboundEncryptionPacket());
@@ -65,6 +73,16 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     private final byte id;
     private final T handler;
 
+    /**
+     * Creates a new packet. Handler should be a subclass of {@link ProxyMessageHandler} if packet flow is
+     * {@link PacketFlow#TO_PROXY}, and a subclass of {@link ServerMessageHandler} if packet flow is
+     * {@link PacketFlow#TO_SERVER}.
+     * @param packetFlow The packet flow
+     * @param id The packet id, must be unique in the packet flow
+     * @param handler The handler
+     * @throws IllegalArgumentException if the id is already registered
+     * @throws IllegalArgumentException if the handler is implementing wrong type for the packet flow
+     */
     private Protocol(@NotNull PacketFlow packetFlow, int id, @NotNull T handler) {
         this.packetFlow = packetFlow;
         this.id = (byte) (id & 0xFF);
@@ -74,7 +92,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
                 throw new IllegalArgumentException("Handler must be instance of ProxyMessageHandler");
             }
             if (TO_PROXY_BY_ID.containsKey(this.id)) {
-                throw new AssertionError("Duplicate protocol id: " + this.id);
+                throw new IllegalArgumentException("Duplicate protocol id: " + this.id);
             }
             TO_PROXY_BY_ID.put(this.id, this);
         } else {
@@ -82,7 +100,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
                 throw new IllegalArgumentException("Handler must be instance of ServerMessageHandler");
             }
             if (TO_SERVER_BY_ID.containsKey(this.id)) {
-                throw new AssertionError("Duplicate protocol id: " + this.id);
+                throw new IllegalArgumentException("Duplicate protocol id: " + this.id);
             }
             TO_SERVER_BY_ID.put(this.id, this);
         }
@@ -149,9 +167,11 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     }
 
     /**
-     * This method is called when a packet is received (proxy-side).
+     * This method is called when a raw packet is received (proxy-side).
      * @param server the server connection
      * @param rawData the data of the packet
+     * @throws RuntimeException if the connection is encrypted but cannot decrypt the packet
+     * @throws RuntimeException if the packet must be received encrypted but the connection is not encrypted
      */
     public static void handleProxySide(ServerConnection server, byte[] rawData) {
         byte[] data;
@@ -168,7 +188,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
              DataInputStream in = new DataInputStream(bin)) {
             byte id = (byte) (in.readByte() & 0xFF);
             if (id != 0 && !server.isEncrypted()) {
-                throw new RuntimeException("Packet " + id + " must be sent encrypted (server: " + server + ")");
+                throw new RuntimeException("Packet " + id + " must be received encrypted (server: " + server + ")");
             }
             Protocol<?, ?> protocol = Protocol.getById(PacketFlow.TO_PROXY, id);
             if (protocol == null) {
@@ -183,7 +203,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
                 Logger.getCurrentLogger().info("Received packet {} (0x{}) from server connection {} (encrypted: {})", id, hex, server, server.isEncrypted());
             }
             if (protocol.packetFlow != PacketFlow.TO_PROXY) {
-                throw new IllegalArgumentException("Packet " + protocol + " is not proxybound");
+                throw new AssertionError("Packet " + protocol + " is not proxybound");
             }
             @SuppressWarnings("unchecked")
             ProxyMessageHandler<Message> handler = (ProxyMessageHandler<Message>) protocol.getHandler();
@@ -195,8 +215,10 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     }
 
     /**
-     * This method is called when a packet is received (server-side).
+     * This method is called when a raw packet is received (server-side).
      * @param rawData the data of the packet
+     * @throws RuntimeException if the connection is encrypted but cannot decrypt the packet
+     * @throws RuntimeException if the packet must be received encrypted but the connection is not encrypted
      */
     public static void handleServerSide(@NotNull PacketSender sender, byte[] rawData) {
         byte[] data;
@@ -213,7 +235,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
              DataInputStream in = new DataInputStream(bin)) {
             byte id = (byte) (in.readByte() & 0xFF);
             if (id != 0 && !sender.isEncrypted()) {
-                throw new RuntimeException("Packet " + id + " must be sent encrypted (sender: " + sender + ")");
+                throw new RuntimeException("Packet " + id + " must be received encrypted (sender: " + sender + ")");
             }
             Protocol<?, ?> protocol = Protocol.getById(PacketFlow.TO_SERVER, id);
             if (protocol == null) {
@@ -226,7 +248,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
                 Logger.getCurrentLogger().info("Received packet {} (0x{}) from {}", id, hex, sender);
             }
             if (protocol.packetFlow != PacketFlow.TO_SERVER) {
-                throw new IllegalArgumentException("Packet " + protocol + " is not serverbound");
+                throw new AssertionError("Packet " + protocol + " is not serverbound");
             }
             @SuppressWarnings("unchecked")
             ServerMessageHandler<Message> handler = (ServerMessageHandler<Message>) protocol.getHandler();
@@ -237,6 +259,10 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
         }
     }
 
+    /**
+     * Returns the packet flow of this packet.
+     * @return the packet flow
+     */
     @NotNull
     @Contract(pure = true)
     public PacketFlow getPacketFlow() {
@@ -271,10 +297,15 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
         }
     }
 
+    /**
+     * Returns the protocol data in string form.
+     * @return the protocol data
+     */
     @Override
     public String toString() {
         return "Protocol{" +
                 "id=" + id +
+                ", packetFlow=" + packetFlow +
                 ", handler=" + handler +
                 '}';
     }

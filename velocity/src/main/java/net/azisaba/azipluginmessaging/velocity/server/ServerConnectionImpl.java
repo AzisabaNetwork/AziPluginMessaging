@@ -98,7 +98,7 @@ public class ServerConnectionImpl implements ServerConnection {
 
     @Override
     public @NotNull PublicKey getRemotePublicKey() {
-        return publicKey;
+        return Objects.requireNonNull(publicKey, "public key is not set");
     }
 
     @Override

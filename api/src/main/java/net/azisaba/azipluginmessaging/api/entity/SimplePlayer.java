@@ -10,7 +10,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Simple instance of {@link Player}.
+ * Simple instance of {@link Player}. It lacks most of the features, and for example, you can't send messages to this
+ * instance.
  */
 public final class SimplePlayer implements Player {
     private final UUID uuid;

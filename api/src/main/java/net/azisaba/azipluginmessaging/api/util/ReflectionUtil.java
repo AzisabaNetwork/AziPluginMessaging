@@ -8,6 +8,13 @@ import java.lang.reflect.Method;
 public class ReflectionUtil {
     // 1. look for method on superclass
     // 2. look for method on interfaces, then interfaces in interface...
+
+    /**
+     * Finds the method recursively with the given method (uses name and parameter types for finding a method).
+     * @param clazz the base class to look for the method
+     * @param m the method to look for
+     * @return the method if found; null otherwise
+     */
     @Nullable
     public static Method findMethod(@NotNull Class<?> clazz, @NotNull Method m) {
         try {

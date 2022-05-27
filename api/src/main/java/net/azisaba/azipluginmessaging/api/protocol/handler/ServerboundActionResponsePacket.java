@@ -9,6 +9,9 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * Sends the arbitrary message to a player.
+ */
 public class ServerboundActionResponsePacket implements ServerMessageHandler<ServerboundActionResponseMessage> {
     @NotNull
     @Override
@@ -20,6 +23,8 @@ public class ServerboundActionResponsePacket implements ServerMessageHandler<Ser
 
     @Override
     public void handle(@NotNull PacketSender sender, @NotNull ServerboundActionResponseMessage msg) throws Exception {
-        AziPluginMessagingProvider.get().getPlayer(msg.getUniqueId()).ifPresent(player -> player.sendMessage(msg.getMessage()));
+        AziPluginMessagingProvider.get()
+                .getPlayer(msg.getUniqueId())
+                .ifPresent(player -> player.sendMessage(msg.getMessage()));
     }
 }

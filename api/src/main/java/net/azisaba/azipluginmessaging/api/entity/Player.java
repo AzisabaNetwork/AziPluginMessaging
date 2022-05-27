@@ -21,7 +21,7 @@ public interface Player {
     UUID getUniqueId();
 
     /**
-     * Sends a message to the player. This method might do nothing depending on the implementation.
+     * Sends a message to the player.
      * @param message the message
      */
     void sendMessage(@NotNull String message);
@@ -35,5 +35,11 @@ public interface Player {
         return getUsername() != null ? getUsername() : getUniqueId().toString();
     }
 
+    /**
+     * Checks if the player has the challenge equals to the provided challenge. Challenge token is used for securing
+     * initial encryption packet.
+     * @param challenge the challenge token to check
+     * @return true if the player has the challenge equals to the provided challenge
+     */
     boolean isChallengeEquals(@NotNull String challenge);
 }

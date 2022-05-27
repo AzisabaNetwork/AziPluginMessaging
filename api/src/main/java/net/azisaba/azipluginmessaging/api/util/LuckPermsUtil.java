@@ -63,6 +63,13 @@ public class LuckPermsUtil {
         return map.add(builder.build());
     }
 
+    /**
+     * Finds the prefix nodes set by {@link #setPrefix(NodeMap, String, String)}.
+     * @param map the node map
+     * @param server the server to apply server context to
+     * @return the stream of prefix nodes
+     * @see #findPrefixNode(NodeMap, String, String) findPrefixNode(NodeMap, String, String) for finding a specific prefix node
+     */
     @NotNull
     public static Stream<Node> findPrefixNodes(@NotNull NodeMap map, @Nullable String server) {
         if (server == null) {
@@ -81,6 +88,14 @@ public class LuckPermsUtil {
                         node.getContexts().getValues("server").contains(server));
     }
 
+    /**
+     * Find a prefix node set by {@link #setPrefix(NodeMap, String, String)}.
+     * @param map the node map
+     * @param prefix the prefix to find
+     * @param server the server to apply server context to
+     * @return the node, or null if not found
+     * @see #findPrefixNodes(NodeMap, String) findPrefixNodes(NodeMap, String) for finding all prefix nodes under the given server
+     */
     @Nullable
     public static Node findPrefixNode(@NotNull NodeMap map, @NotNull String prefix, @Nullable String server) {
         if (server == null) {
@@ -103,6 +118,13 @@ public class LuckPermsUtil {
                 .orElse(null);
     }
 
+    /**
+     * Sets the prefix node.
+     * @param map the node map
+     * @param prefix the prefix to set
+     * @param server the server to apply server context to
+     * @return the result of the operation
+     */
     public static @NotNull DataMutateResult setPrefix(@NotNull NodeMap map, @NotNull String prefix, @Nullable String server) {
         PrefixNode.Builder builder = PrefixNode.builder(prefix, 666).value(true);
         if (server != null) builder = builder.withContext("server", server);
