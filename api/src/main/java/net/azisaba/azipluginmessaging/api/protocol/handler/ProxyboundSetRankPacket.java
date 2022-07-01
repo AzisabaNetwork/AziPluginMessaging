@@ -58,7 +58,7 @@ public class ProxyboundSetRankPacket implements ProxyMessageHandler<ProxyboundSe
         }
         boolean modified = false;
         for (String group : track.getGroups()) {
-            if (msg.getServer().equals(group)) continue;
+            if (msg.getRank().equals(group)) continue;
             Node node = LuckPermsUtil.findParentNode(nodes, group, msg.getServer());
             if (node != null) {
                 nodes.remove(node);

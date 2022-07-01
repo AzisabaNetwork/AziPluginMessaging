@@ -7,7 +7,6 @@ import net.azisaba.azipluginmessaging.api.protocol.message.PlayerWithServerMessa
 import net.azisaba.azipluginmessaging.api.protocol.message.ServerboundActionResponseMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
-import net.azisaba.azipluginmessaging.api.util.Constants;
 import net.azisaba.azipluginmessaging.api.util.LuckPermsUtil;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -16,6 +15,7 @@ import net.luckperms.api.model.data.DataType;
 import net.luckperms.api.model.data.NodeMap;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
+import net.luckperms.api.track.Track;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInputStream;
@@ -43,22 +43,24 @@ public class ProxyboundToggleSaraShowPacket implements ProxyMessageHandler<Playe
         String username = user.getUsername();
         NodeMap map = user.getData(DataType.NORMAL);
         boolean modified = false;
-        for (int saraGroup : Constants.SARA_GROUPS) {
-            Node nodeSara = LuckPermsUtil.findParentNode(map, saraGroup + "yen", null);
-            Node nodeHideSara = LuckPermsUtil.findParentNode(map, "hide" + saraGroup, null);
+        Track track = api.getTrackManager().createAndLoadTrack("sara").join();
+        for (String groupName : track.getGroups()) {
+            int yen = Integer.parseInt(groupName.replace("sara", ""));
+            Node nodeSara = LuckPermsUtil.findParentNode(map, groupName, null);
+            Node nodeHideSara = LuckPermsUtil.findParentNode(map, "hide" + yen, null);
             if (nodeSara != null || nodeHideSara != null) {
                 String actionDesc;
-                Node nodeSaraShow = LuckPermsUtil.findParentNode(map, "show" + saraGroup + "yen", msg.getServer());
+                Node nodeSaraShow = LuckPermsUtil.findParentNode(map, "show" + yen + "yen", msg.getServer());
                 if (nodeSaraShow != null) {
                     // hide
                     map.remove(nodeSaraShow);
-                    actionDesc = "Removed show" + saraGroup + "yen from " + username + " in server=" + msg.getServer();
-                    Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7a" + saraGroup + "円皿を非表示にしました。"));
+                    actionDesc = "Removed show" + yen + "yen from " + username + " in server=" + msg.getServer();
+                    Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7a" + yen + "円皿を非表示にしました。"));
                 } else {
                     // show
-                    LuckPermsUtil.addGroup(map, "show" + saraGroup + "yen", msg.getServer(), -1);
-                    actionDesc = "Added show" + saraGroup + "yen to " + username + " in server=" + msg.getServer();
-                    Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7a" + saraGroup + "円皿を表示しました。"));
+                    LuckPermsUtil.addGroup(map, "show" + yen + "yen", msg.getServer(), -1);
+                    actionDesc = "Added show" + yen + "yen to " + username + " in server=" + msg.getServer();
+                    Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7a" + yen + "円皿を表示しました。"));
                 }
                 modified = true;
                 api.getActionLogger().submit(

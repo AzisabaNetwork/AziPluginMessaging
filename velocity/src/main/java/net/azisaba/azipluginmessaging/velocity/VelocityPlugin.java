@@ -16,7 +16,7 @@ import net.azisaba.azipluginmessaging.velocity.server.ServerConnectionImpl;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-@Plugin(id = "azi-plugin-messaging", name = "AziPluginMessaging", version = "1.0.0",
+@Plugin(id = "azi-plugin-messaging", name = "AziPluginMessaging", version = "2.2.1-SNAPSHOT",
         dependencies = @Dependency(id = "luckperms"))
 public class VelocityPlugin {
     @Inject

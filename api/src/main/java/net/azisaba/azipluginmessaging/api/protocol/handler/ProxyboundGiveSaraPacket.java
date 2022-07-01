@@ -5,7 +5,6 @@ import net.azisaba.azipluginmessaging.api.entity.SimplePlayer;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundGiveSaraMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
-import net.azisaba.azipluginmessaging.api.util.Constants;
 import net.azisaba.azipluginmessaging.api.util.LuckPermsUtil;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -14,6 +13,7 @@ import net.luckperms.api.model.data.DataType;
 import net.luckperms.api.model.data.NodeMap;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
+import net.luckperms.api.track.Track;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInputStream;
@@ -34,8 +34,10 @@ public class ProxyboundGiveSaraPacket implements ProxyMessageHandler<ProxyboundG
         if (user == null || user.getUsername() == null) {
             throw new IllegalArgumentException("User " + msg.getPlayer().getUniqueId() + " could not be found in the LuckPerms database.");
         }
-        if (!Constants.SARA_GROUPS.contains(msg.getAmount())) {
-            throw new IllegalArgumentException("Invalid sara group: " + msg.getAmount());
+        String groupName = msg.getAmount() + "sara";
+        Track track = api.getTrackManager().createAndLoadTrack("sara").join();
+        if (!track.containsGroup(groupName)) {
+            throw new IllegalArgumentException("Group is not in a track: " + groupName);
         }
         String username = user.getUsername();
         boolean modified = false;
