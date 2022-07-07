@@ -34,7 +34,7 @@ public class ProxyboundGiveSaraPacket implements ProxyMessageHandler<ProxyboundG
         if (user == null || user.getUsername() == null) {
             throw new IllegalArgumentException("User " + msg.getPlayer().getUniqueId() + " could not be found in the LuckPerms database.");
         }
-        String groupName = msg.getAmount() + "sara";
+        String groupName = msg.getAmount() + "yen";
         Track track = api.getTrackManager().createAndLoadTrack("sara").join();
         if (!track.containsGroup(groupName)) {
             throw new IllegalArgumentException("Group is not in a track: " + groupName);
@@ -42,9 +42,9 @@ public class ProxyboundGiveSaraPacket implements ProxyMessageHandler<ProxyboundG
         String username = user.getUsername();
         boolean modified = false;
         NodeMap map = user.getData(DataType.NORMAL);
-        Node nodeSara = LuckPermsUtil.findParentNode(map, msg.getAmount() + "yen", null);
+        Node nodeSara = LuckPermsUtil.findParentNode(map, groupName, null);
         if (nodeSara == null) {
-            LuckPermsUtil.addGroup(map, msg.getAmount() + "yen", null, -1);
+            LuckPermsUtil.addGroup(map, groupName, null, -1);
             modified = true;
         }
         if (!modified) {
@@ -61,7 +61,7 @@ public class ProxyboundGiveSaraPacket implements ProxyMessageHandler<ProxyboundG
                         .sourceName("AziPluginMessaging@" + api.getServerName())
                         .target(msg.getPlayer().getUniqueId())
                         .targetName(username)
-                        .description("Added " + msg.getAmount() + "yen sara to " + username)
+                        .description("Added " + groupName + " sara to " + username)
                         .build());
     }
 }
