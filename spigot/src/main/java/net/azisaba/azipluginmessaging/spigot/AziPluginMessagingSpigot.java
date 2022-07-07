@@ -1,6 +1,7 @@
 package net.azisaba.azipluginmessaging.spigot;
 
 import net.azisaba.azipluginmessaging.api.AziPluginMessaging;
+import net.azisaba.azipluginmessaging.api.EnvironmentType;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.protocol.PacketQueue;
@@ -59,6 +60,11 @@ public class AziPluginMessagingSpigot implements AziPluginMessaging {
     @Override
     public @NotNull PacketQueue getPacketQueue() {
         return packetQueue;
+    }
+
+    @Override
+    public @NotNull EnvironmentType getEnvironmentType() {
+        return EnvironmentType.SPIGOT;
     }
 
     public static class ServerImpl implements Server {

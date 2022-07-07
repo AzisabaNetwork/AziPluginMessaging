@@ -38,11 +38,7 @@ public class PlayerUtil {
         try {
             return new SimplePlayer(fetchUUIDFromMojangAPI(nameOrUUID), nameOrUUID);
         } catch (IOException e) {
-            String message = "Failed to fetch UUID of " + nameOrUUID + " from Mojang API.\n" +
-                    "Possible reasons:\n" +
-                    "  - the player does not exist\n" +
-                    "  - the Mojang API is down\n" +
-                    "  - your internet connection is down";
+            String message = "Failed to fetch UUID of " + nameOrUUID + " from Mojang API";
             throw new RuntimeException(message, e);
         }
     }

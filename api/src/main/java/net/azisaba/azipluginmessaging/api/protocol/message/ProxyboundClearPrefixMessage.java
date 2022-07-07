@@ -16,25 +16,33 @@ import java.util.Objects;
  */
 public class ProxyboundClearPrefixMessage extends PlayerWithServerMessage {
     protected final boolean global;
+    protected final boolean all;
 
-    public ProxyboundClearPrefixMessage(@Nullable String server, @NotNull Player player) {
+    public ProxyboundClearPrefixMessage(@NotNull Player player, @Nullable String server, boolean all) {
         super(server, player);
         this.global = "global".equals(server);
+        this.all = all;
     }
 
-    public ProxyboundClearPrefixMessage(boolean global, @NotNull Player player) {
+    public ProxyboundClearPrefixMessage(@NotNull Player player, boolean global, boolean all) {
         super(null, player);
         this.global = global;
+        this.all = all;
     }
 
     public boolean isGlobal() {
         return global;
     }
 
+    public boolean isAll() {
+        return all;
+    }
+
     @Override
     public void write(@NotNull DataOutputStream out) throws IOException {
         // yes, we don't need to write the server name because it is extracted from the ServerConnection.
         out.writeBoolean(global);
+        out.writeBoolean(all);
         super.write(out);
     }
 
@@ -45,6 +53,7 @@ public class ProxyboundClearPrefixMessage extends PlayerWithServerMessage {
         if (in.readBoolean()) { // global
             trueServer = "global";
         }
-        return new ProxyboundClearPrefixMessage(trueServer, SimplePlayer.read(in)); // player
+        boolean all = in.readBoolean();
+        return new ProxyboundClearPrefixMessage(SimplePlayer.read(in), trueServer, all); // player
     }
 }

@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * A message with player argument only.
@@ -36,11 +35,6 @@ public class PlayerMessage implements Message {
 
     @Contract("_ -> new")
     public static @NotNull PlayerMessage read(@NotNull DataInputStream in) throws IOException {
-        UUID uuid = UUID.fromString(in.readUTF());
-        String username = null;
-        if (in.readBoolean()) {
-            username = in.readUTF();
-        }
-        return new PlayerMessage(new SimplePlayer(uuid, username));
+        return new PlayerMessage(SimplePlayer.read(in));
     }
 }

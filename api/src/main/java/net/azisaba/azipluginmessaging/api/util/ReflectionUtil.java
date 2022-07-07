@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.util.NoSuchElementException;
 
 public class ReflectionUtil {
     // 1. look for method on superclass
@@ -30,5 +31,26 @@ public class ReflectionUtil {
             if (method != null) return method;
         }
         return null;
+    }
+
+    @NotNull
+    public static Class<?> getCallerClass() {
+        return getCallerClass(3); // 2 + this method
+    }
+
+    @NotNull
+    public static Class<?> getCallerClass(int offset) {
+        StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
+        for (int i = 1 + offset; i < stElements.length; i++) {
+            StackTraceElement ste = stElements[i];
+            if (!ste.getClassName().equals(ReflectionUtil.class.getName()) && !ste.getClassName().contains("java.lang.Thread")) {
+                try {
+                    return Class.forName(ste.getClassName());
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        throw new NoSuchElementException("elements: " + stElements.length + ", offset: " + offset);
     }
 }

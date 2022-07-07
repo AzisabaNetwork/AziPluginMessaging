@@ -132,7 +132,7 @@ public interface Logger {
     }
 
     /**
-     * Returns the currently active logger. If no logger is active, a default logger is returned.
+     * Returns the logger on the current environment. Returns a default one if the plugin is not yet enabled.
      * @return the logger
      */
     static @NotNull Logger getCurrentLogger() {

@@ -1,5 +1,6 @@
 package net.azisaba.azipluginmessaging.api.protocol.handler;
 
+import net.azisaba.azipluginmessaging.api.AziPluginMessagingConfig;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundSetPrefixMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
@@ -19,7 +20,9 @@ import java.util.UUID;
 public class ProxyboundSetPrefixPacket implements ProxyMessageHandler<ProxyboundSetPrefixMessage> {
     @Override
     public @NotNull ProxyboundSetPrefixMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {
-        return ProxyboundSetPrefixMessage.read(server.getServerInfo().getName(), in);
+        String serverName = server.getServerInfo().getName();
+        serverName = AziPluginMessagingConfig.contextualServers.getOrDefault(serverName, serverName);
+        return ProxyboundSetPrefixMessage.read(serverName, in);
     }
 
     @Override

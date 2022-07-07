@@ -14,7 +14,7 @@ public final class AziPluginMessagingProvider {
             "  - the AziPluginMessaging plugin is not installed or threw exception while initializing\n" +
             "  - the plugin is not in the dependency of the plugin in the stacktrace\n" +
             "  - tried to access the API before the plugin is loaded (such as constructor)\n" +
-            "    Call #get() in the plugin's onEnable() method to load the API correctly!";
+            "    Call #get() in the plugin's onEnable() method (or equivalent one) to load the API correctly!";
 
     private static AziPluginMessaging api;
 

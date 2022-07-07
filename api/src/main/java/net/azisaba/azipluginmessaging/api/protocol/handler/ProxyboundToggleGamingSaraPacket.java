@@ -29,6 +29,10 @@ public class ProxyboundToggleGamingSaraPacket implements ProxyMessageHandler<Pla
 
     @Override
     public void handle(@NotNull PacketSender sender, @NotNull PlayerMessage msg) {
+        toggle(sender, msg, "gamingsara");
+    }
+
+    public static void toggle(@NotNull PacketSender sender, @NotNull PlayerMessage msg, @NotNull String name) {
         LuckPerms api = LuckPermsProvider.get();
         User user = api.getUserManager().loadUser(msg.getPlayer().getUniqueId()).join();
         if (user == null || user.getUsername() == null) {
@@ -36,20 +40,20 @@ public class ProxyboundToggleGamingSaraPacket implements ProxyMessageHandler<Pla
         }
         String username = user.getUsername();
         NodeMap map = user.getData(DataType.NORMAL);
-        Node nodeChangeGamingSara = LuckPermsUtil.findParentNode(map, "changegamingsara", null);
-        if (nodeChangeGamingSara == null) {
-            Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7c権限がありません。皿を持ってるのにこのメッセージが出る場合はPerfectBoat#0001に泣きつきましょう！"));
-            throw new MissingPermissionException("User " + msg.getPlayer().getUniqueId() + " does not have the group 'changegamingsara'.");
+        Node nodeChange = LuckPermsUtil.findParentNode(map, "change" + name, null);
+        if (nodeChange == null) {
+            Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7c権限がありません。皿を持ってるのにこのメッセージが出る場合はアジ鯖サポートに泣きつきましょう！"));
+            throw new MissingPermissionException("User " + msg.getPlayer().getUniqueId() + " does not have the group 'change" + name + "'.");
         }
         char p;
-        Node nodeGamingSara = LuckPermsUtil.findParentNode(map, "gamingsara", null);
-        if (nodeGamingSara != null) {
-            map.remove(nodeGamingSara);
-            Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7aゲーミング皿を非表示にしました。"));
+        Node node = LuckPermsUtil.findParentNode(map, name, null);
+        if (node != null) {
+            map.remove(node);
+            Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7a" + name + "皿を非表示にしました。"));
             p = '-';
         } else {
-            LuckPermsUtil.addGroup(map, "gamingsara", null, -1);
-            Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7aゲーミング皿を表示しました。"));
+            LuckPermsUtil.addGroup(map, name, null, -1);
+            Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7a" + name + "皿を表示しました。"));
             p = '+';
         }
         api.getUserManager().saveUser(user);
@@ -62,7 +66,7 @@ public class ProxyboundToggleGamingSaraPacket implements ProxyMessageHandler<Pla
                         .sourceName("AziPluginMessaging@" + api.getServerName())
                         .target(msg.getPlayer().getUniqueId())
                         .targetName(username)
-                        .description("Toggled " + p + "gamingsara for " + username)
+                        .description("Toggled " + p + name + " for " + username)
                         .build());
     }
 }

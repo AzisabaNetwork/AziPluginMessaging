@@ -18,16 +18,21 @@ public class ProxyboundSetPrefixMessage extends PlayerWithServerMessage {
     protected final boolean global;
     protected final String prefix;
 
-    public ProxyboundSetPrefixMessage(@Nullable String server, @NotNull String prefix, @NotNull Player player) {
+    public ProxyboundSetPrefixMessage(@NotNull Player player, @Nullable String server, @NotNull String prefix) {
         super(server, player);
         this.global = "global".equals(server);
         this.prefix = Objects.requireNonNull(prefix, "prefix cannot be null");
     }
 
-    public ProxyboundSetPrefixMessage(boolean global, @NotNull String prefix, @NotNull Player player) {
+    public ProxyboundSetPrefixMessage(@NotNull Player player, boolean global, @NotNull String prefix) {
         super(null, player);
         this.global = global;
         this.prefix = Objects.requireNonNull(prefix, "prefix cannot be null");
+    }
+
+    @Contract("_, _, _ -> new")
+    public static @NotNull ProxyboundSetPrefixMessage createFromServerside(@NotNull Player player, boolean global, @NotNull String prefix) {
+        return new ProxyboundSetPrefixMessage(player, global, prefix);
     }
 
     @NotNull
@@ -54,6 +59,7 @@ public class ProxyboundSetPrefixMessage extends PlayerWithServerMessage {
         if (in.readBoolean()) { // global
             trueServer = "global";
         }
-        return new ProxyboundSetPrefixMessage(trueServer, in.readUTF(), SimplePlayer.read(in)); // prefix, player
+        String prefix = in.readUTF();
+        return new ProxyboundSetPrefixMessage(SimplePlayer.read(in), trueServer, prefix);
     }
 }

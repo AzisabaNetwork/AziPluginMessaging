@@ -89,6 +89,18 @@ public class LuckPermsUtil {
     }
 
     /**
+     * Streams all prefix nodes set by {@link #setPrefix(NodeMap, String, String)}.
+     * @param map the node map
+     * @return the stream of prefix nodes
+     */
+    @NotNull
+    public static Stream<Node> findAllPrefixNodes(@NotNull NodeMap map) {
+        return map.toCollection()
+                .stream()
+                .filter(node -> node.getType() == NodeType.PREFIX && node.getKey().startsWith("prefix.666.") && node.getValue());
+    }
+
+    /**
      * Find a prefix node set by {@link #setPrefix(NodeMap, String, String)}.
      * @param map the node map
      * @param prefix the prefix to find

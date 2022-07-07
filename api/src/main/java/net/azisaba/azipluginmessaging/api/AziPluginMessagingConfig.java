@@ -23,6 +23,7 @@ public class AziPluginMessagingConfig {
     public static final Map<String, String> servers = new ConcurrentHashMap<>();
     public static final Map<String, String> saraShowServers = new ConcurrentHashMap<>();
     public static final Map<String, String> rankableServers = new ConcurrentHashMap<>();
+    public static final Map<String, String> contextualServers = new ConcurrentHashMap<>();
 
     /**
      * Reloads all configuration from config file.
@@ -91,7 +92,39 @@ public class AziPluginMessagingConfig {
                                 "# When the proxy receives a packet from non-enabled server, the proxy will drop the packet.",
                                 "rankableServers: # this is meaningless in spigot",
                                 "  life: life",
-                                "  lifepve: life"
+                                "  lifepve: life",
+                                "",
+                                "# for ProxyboundSetPrefixPacket and ProxyboundClearPrefixPacket",
+                                "contextualServers:",
+                                "  life: life",
+                                "  lifepve: life",
+                                "",
+                                "# Database settings (required)",
+                                "# This setting is used for setting the rank temporary.",
+                                "database:",
+                                "  # (scheme)://(host):(port)/(database)",
+                                "  # Keep the line commented out unless you get an obvious error message indicating that the driver was not found.",
+                                "  # Default driver (net.azisaba.taxoffice.libs.org.mariadb.jdbc.Driver) points to the bundled MariaDB driver in the TaxOffice jar.",
+                                "  #driver: net.azisaba.taxoffice.libs.org.mariadb.jdbc.Driver",
+                                "",
+                                "  # change to jdbc:mysql if you want to use MySQL instead of MariaDB",
+                                "  scheme: jdbc:mariadb",
+                                "  hostname: localhost",
+                                "  port: 3306",
+                                "  name: azipm",
+                                "  username: azipm",
+                                "  password: azipm",
+                                "  properties:",
+                                "    useSSL: true",
+                                "    verifyServerCertificate: true",
+                                "    prepStmtCacheSize: 250",
+                                "    prepStmtCacheSqlLimit: 2048",
+                                "    cachePrepStmts: true",
+                                "    useServerPrepStmts: true # use server-side prepared statements for performance boost",
+                                "    socketTimeout: 30000 # milliseconds",
+                                "    useLocalSessionState: true",
+                                "    rewriteBatchedStatements: true",
+                                "    maintainTimeStats: false"
                         ),
                         StandardOpenOption.CREATE
                 );
@@ -102,9 +135,13 @@ public class AziPluginMessagingConfig {
         try {
             YamlObject obj = new YamlConfiguration(configPath.toAbsolutePath().toString()).asObject();
             debug = obj.getBoolean("debug", false);
-            readMap(servers, obj, "servers");
-            readMap(rankableServers, obj, "rankableServers");
-            readMap(saraShowServers, obj, "saraShowServers");
+            if (AziPluginMessagingProvider.get().getEnvironmentType() == EnvironmentType.VELOCITY) {
+                readMap(servers, obj, "servers");
+                readMap(rankableServers, obj, "rankableServers");
+                readMap(saraShowServers, obj, "saraShowServers");
+                readMap(contextualServers, obj, "contextualServers");
+                AziPluginMessagingProvider.get().getProxy().loadConfig(obj);
+            }
         } catch (IOException ex) {
             Logger.getCurrentLogger().warn("Failed to read config.yml", ex);
         }

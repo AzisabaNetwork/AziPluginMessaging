@@ -1,5 +1,6 @@
 package net.azisaba.azipluginmessaging.api.protocol.handler;
 
+import net.azisaba.azipluginmessaging.api.AziPluginMessagingConfig;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundClearPrefixMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
@@ -19,7 +20,9 @@ import java.util.UUID;
 public class ProxyboundClearPrefixPacket implements ProxyMessageHandler<ProxyboundClearPrefixMessage> {
     @Override
     public @NotNull ProxyboundClearPrefixMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {
-        return ProxyboundClearPrefixMessage.read(server.getServerInfo().getName(), in);
+        String serverName = server.getServerInfo().getName();
+        serverName = AziPluginMessagingConfig.contextualServers.getOrDefault(serverName, serverName);
+        return ProxyboundClearPrefixMessage.read(serverName, in);
     }
 
     @Override
@@ -30,7 +33,9 @@ public class ProxyboundClearPrefixPacket implements ProxyMessageHandler<Proxybou
             throw new IllegalArgumentException("Could not find an user in LuckPerms database: " + msg.getPlayer().getUniqueId());
         }
         NodeMap map = user.data();
-        if (msg.isGlobal()) {
+        if (msg.isAll()) {
+            LuckPermsUtil.findAllPrefixNodes(map).forEach(map::remove);
+        } else if (msg.isGlobal()) {
             LuckPermsUtil.findPrefixNodes(map, null).forEach(map::remove);
         } else {
             LuckPermsUtil.findPrefixNodes(map, msg.getServer()).forEach(map::remove);
@@ -38,6 +43,10 @@ public class ProxyboundClearPrefixPacket implements ProxyMessageHandler<Proxybou
         String username = user.getUsername();
         api.getUserManager().saveUser(user);
         api.getMessagingService().ifPresent(service -> service.pushUserUpdate(user));
+        String descServer = "all servers";
+        if (!msg.isAll()) {
+            descServer = "server=" + msg.getServer();
+        }
         api.getActionLogger().submit(
                 Action.builder()
                         .targetType(Action.Target.Type.USER)
@@ -46,7 +55,7 @@ public class ProxyboundClearPrefixPacket implements ProxyMessageHandler<Proxybou
                         .sourceName("AziPluginMessaging[" + msg.getServer() + "]@" + api.getServerName())
                         .target(msg.getPlayer().getUniqueId())
                         .targetName(username)
-                        .description("Clear " + username + "'s prefix in server=" + msg.getServer())
+                        .description("Clear " + username + "'s prefix in " + descServer)
                         .build());
     }
 }

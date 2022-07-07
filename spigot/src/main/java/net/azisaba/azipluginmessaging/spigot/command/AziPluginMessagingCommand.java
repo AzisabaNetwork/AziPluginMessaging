@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import xyz.acrylicstyle.util.InvalidArgumentException;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,8 +36,31 @@ public class AziPluginMessagingCommand implements TabExecutor {
             System.arraycopy(args, 1, newArgs, 0, newArgs.length);
             cmd.execute(sender, newArgs);
         } catch (Exception e) {
-            sender.sendMessage(ChatColor.RED + "An internal error occurred while executing command: " + e.getMessage());
-            e.printStackTrace();
+            if (e instanceof InvalidArgumentException) {
+                InvalidArgumentException ex = (InvalidArgumentException) e;
+                String error = ChatColor.RED + "Invalid syntax: " + ex.getMessage();
+                if (ex.getContext() == null) {
+                    sender.sendMessage(error);
+                }
+                StringBuilder sb = new StringBuilder(error);
+                sb.append("\n");
+                String prev = ex.getContext().peekWithAmount(-Math.min(ex.getContext().index(), 15));
+                StringBuilder next = new StringBuilder(ex.getContext().peekWithAmount(Math.min(ex.getContext().readableCharacters(), Math.max(15, ex.getLength()))));
+                if (next.length() == 0) {
+                    for (int i = 0; i < ex.getLength(); i++) {
+                        next.append(' ');
+                    }
+                }
+                sb.append(ChatColor.WHITE).append(prev);
+                String left = next.substring(0, ex.getLength());
+                String right = next.substring(ex.getLength(), next.length());
+                sb.append(ChatColor.RED).append(ChatColor.UNDERLINE).append(left);
+                sb.append(ChatColor.WHITE).append(right);
+                sender.sendMessage(sb.toString());
+            } else {
+                sender.sendMessage(ChatColor.RED + "An internal error occurred while executing command: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
         return true;
     }

@@ -4,10 +4,17 @@ import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.protocol.PacketQueue;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
+import net.azisaba.azipluginmessaging.api.util.SQLThrowableConsumer;
+import net.azisaba.azipluginmessaging.api.yaml.YamlObject;
+import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.PreparedStatement;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface AziPluginMessaging {
     /**
@@ -56,7 +63,28 @@ public interface AziPluginMessaging {
     @NotNull
     PacketQueue getPacketQueue();
 
+    /**
+     * Returns the environment which the plugin is running.
+     * @return the environment
+     */
+    @NotNull
+    EnvironmentType getEnvironmentType();
+
     interface Proxy {
+        @ApiStatus.Internal
+        default void loadConfig(@NotNull YamlObject obj) {
+            throw new UnsupportedOperationException("Unsupported in current environment.");
+        }
+
+        @Contract
+        default @NotNull CompletableFuture<Void> runPreparedStatement(@Language("SQL") @NotNull String sql, @NotNull SQLThrowableConsumer<PreparedStatement> action) {
+            throw new UnsupportedOperationException("Unsupported in current environment.");
+        }
+
+        @Contract
+        default void checkRankAsync(@NotNull UUID uuid) {
+            throw new UnsupportedOperationException("Unsupported in current environment.");
+        }
     }
 
     interface Server {
