@@ -24,6 +24,7 @@ import java.util.Objects;
 
 public class SpigotPlugin extends JavaPlugin implements Listener {
     public static SpigotPlugin plugin;
+    private boolean processJoinEvent = false;
 
     @Override
     public void onLoad() {
@@ -35,6 +36,9 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        // Don't process PlayerJoinEvent for 20 ticks, the server may be lagging at this point.
+        Bukkit.getScheduler().runTaskLater(this, () -> processJoinEvent = true, 20);
+
         Objects.requireNonNull(Bukkit.getPluginCommand("azipluginmessaging")).setExecutor(new AziPluginMessagingCommand());
         try {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, Protocol.LEGACY_CHANNEL_ID);
@@ -66,6 +70,10 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        if (!processJoinEvent) {
+            // < 20 ticks
+            return;
+        }
         PlayerImpl player = PlayerImpl.of(e.getPlayer());
         player.setEncrypted(false);
         player.setRemotePublicKeyInternal(null);

@@ -5,8 +5,10 @@ import net.azisaba.azipluginmessaging.api.EnvironmentType;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.protocol.PacketQueue;
+import net.azisaba.azipluginmessaging.api.protocol.message.ServerboundCheckRankExpirationMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.spigot.entity.PlayerImpl;
+import net.azisaba.azipluginmessaging.spigot.event.CheckedRankExpirationEvent;
 import net.azisaba.azipluginmessaging.spigot.protocol.SimplePacketQueue;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -88,6 +90,11 @@ public class AziPluginMessagingSpigot implements AziPluginMessaging {
                 }
             } catch (RuntimeException ignored) {}
             return null;
+        }
+
+        @Override
+        public void handle(@NotNull ServerboundCheckRankExpirationMessage msg) {
+            Bukkit.getPluginManager().callEvent(new CheckedRankExpirationEvent(msg));
         }
     }
 }

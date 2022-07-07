@@ -10,7 +10,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 /**
- * Sends the arbitrary message to a player.
+ * Sends an arbitrary message to a player. This packet is used for sending messages to a player that is not in the same
+ * proxy server, supporting the multi-proxy environment.
  */
 public class ServerboundActionResponsePacket implements ServerMessageHandler<ServerboundActionResponseMessage> {
     @NotNull

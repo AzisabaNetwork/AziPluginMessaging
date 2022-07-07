@@ -93,10 +93,16 @@ public class DBConnector {
     }
 
     @Contract(pure = true)
-    public static <R> R getPreparedStatement(@Language("SQL") @NotNull String sql, @NotNull SQLThrowableFunction<PreparedStatement, R> action) throws SQLException {
-        return use(connection -> {
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                return action.apply(statement);
+    public static <R> @NotNull CompletableFuture<R> getPreparedStatement(@Language("SQL") @NotNull String sql, @NotNull SQLThrowableFunction<PreparedStatement, R> action) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return use(connection -> {
+                    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                        return action.apply(statement);
+                    }
+                });
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         });
     }

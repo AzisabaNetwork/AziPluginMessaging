@@ -10,6 +10,7 @@ import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.protocol.PacketQueue;
 import net.azisaba.azipluginmessaging.api.util.LuckPermsUtil;
 import net.azisaba.azipluginmessaging.api.util.SQLThrowableConsumer;
+import net.azisaba.azipluginmessaging.api.util.SQLThrowableFunction;
 import net.azisaba.azipluginmessaging.api.yaml.YamlObject;
 import net.azisaba.azipluginmessaging.velocity.entity.PlayerImpl;
 import net.luckperms.api.LuckPerms;
@@ -104,6 +105,12 @@ public class AziPluginMessagingVelocity implements AziPluginMessaging {
         @Override
         public @NotNull CompletableFuture<Void> runPreparedStatement(@NotNull String sql, @NotNull SQLThrowableConsumer<PreparedStatement> action) {
             return DBConnector.runPreparedStatement(sql, action);
+        }
+
+        @Contract
+        @Override
+        public @NotNull <T> CompletableFuture<T> getPreparedStatement(@NotNull String sql, @NotNull SQLThrowableFunction<PreparedStatement, T> action) {
+            return DBConnector.getPreparedStatement(sql, action);
         }
 
         @Override

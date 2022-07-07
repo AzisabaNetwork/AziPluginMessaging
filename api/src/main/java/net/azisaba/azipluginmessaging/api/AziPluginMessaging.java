@@ -3,8 +3,10 @@ package net.azisaba.azipluginmessaging.api;
 import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.protocol.PacketQueue;
+import net.azisaba.azipluginmessaging.api.protocol.message.ServerboundCheckRankExpirationMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.util.SQLThrowableConsumer;
+import net.azisaba.azipluginmessaging.api.util.SQLThrowableFunction;
 import net.azisaba.azipluginmessaging.api.yaml.YamlObject;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.ApiStatus;
@@ -82,6 +84,11 @@ public interface AziPluginMessaging {
         }
 
         @Contract
+        default @NotNull <T> CompletableFuture<T> getPreparedStatement(@Language("SQL") @NotNull String sql, @NotNull SQLThrowableFunction<PreparedStatement, T> action) {
+            throw new UnsupportedOperationException("Unsupported in current environment.");
+        }
+
+        @Contract
         default void checkRankAsync(@NotNull UUID uuid) {
             throw new UnsupportedOperationException("Unsupported in current environment.");
         }
@@ -94,6 +101,11 @@ public interface AziPluginMessaging {
          */
         @NotNull
         default PacketSender getPacketSender() {
+            throw new UnsupportedOperationException("Unsupported in current environment.");
+        }
+
+        @ApiStatus.Internal
+        default void handle(@NotNull ServerboundCheckRankExpirationMessage msg) {
             throw new UnsupportedOperationException("Unsupported in current environment.");
         }
     }

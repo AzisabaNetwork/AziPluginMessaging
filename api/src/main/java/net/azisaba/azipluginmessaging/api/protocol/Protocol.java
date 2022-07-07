@@ -5,6 +5,7 @@ import net.azisaba.azipluginmessaging.api.AziPluginMessagingProvider;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.protocol.handler.MessageHandler;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyMessageHandler;
+import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundCheckRankExpirationPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundClearPrefixPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundEncryptionPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundGiveGamingSaraPacket;
@@ -18,17 +19,20 @@ import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundToggleSaraH
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundToggleSaraShowPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ServerMessageHandler;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ServerboundActionResponsePacket;
+import net.azisaba.azipluginmessaging.api.protocol.handler.ServerboundCheckRankExpirationPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ServerboundEncryptionPacket;
 import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.Message;
 import net.azisaba.azipluginmessaging.api.protocol.message.PlayerMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.PlayerWithServerMessage;
+import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundCheckRankExpirationMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundClearPrefixMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundGiveNitroSaraMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundGiveSaraMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundSetPrefixMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundSetRankMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ServerboundActionResponseMessage;
+import net.azisaba.azipluginmessaging.api.protocol.message.ServerboundCheckRankExpirationMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.server.ServerConnection;
 import net.azisaba.azipluginmessaging.api.util.EncryptionUtil;
@@ -66,13 +70,15 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     public static final Protocol<ProxyboundToggleGamingSaraPacket, PlayerMessage> P_TOGGLE_GAMING_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x04, new ProxyboundToggleGamingSaraPacket());
     public static final Protocol<ProxyboundToggleSaraHidePacket, PlayerMessage> P_TOGGLE_SARA_HIDE = new Protocol<>(PacketFlow.TO_PROXY, 0x05, new ProxyboundToggleSaraHidePacket()); // non-contextual
     public static final Protocol<ProxyboundToggleSaraShowPacket, PlayerWithServerMessage> P_TOGGLE_SARA_SHOW = new Protocol<>(PacketFlow.TO_PROXY, 0x06, new ProxyboundToggleSaraShowPacket()); // contextual
-    public static final Protocol<ProxyboundSetPrefixPacket, ProxyboundSetPrefixMessage> P_SET_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x07, new ProxyboundSetPrefixPacket());
-    public static final Protocol<ProxyboundClearPrefixPacket, ProxyboundClearPrefixMessage> P_CLEAR_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x08, new ProxyboundClearPrefixPacket());
+    public static final Protocol<ProxyboundSetPrefixPacket, ProxyboundSetPrefixMessage> P_SET_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x07, new ProxyboundSetPrefixPacket()); // may be contextual
+    public static final Protocol<ProxyboundClearPrefixPacket, ProxyboundClearPrefixMessage> P_CLEAR_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x08, new ProxyboundClearPrefixPacket()); // may be contextual
     public static final Protocol<ProxyboundGiveNitroSaraPacket, ProxyboundGiveNitroSaraMessage> P_GIVE_NITRO_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x09, new ProxyboundGiveNitroSaraPacket());
     public static final Protocol<ProxyboundToggleNitroSaraPacket, PlayerMessage> P_TOGGLE_NITRO_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x0A, new ProxyboundToggleNitroSaraPacket());
+    public static final Protocol<ProxyboundCheckRankExpirationPacket, ProxyboundCheckRankExpirationMessage> P_CHECK_RANK_EXPIRATION = new Protocol<>(PacketFlow.TO_PROXY, 0x0B, new ProxyboundCheckRankExpirationPacket());
 
     public static final Protocol<ServerboundEncryptionPacket, EncryptionMessage> S_ENCRYPTION = new Protocol<>(PacketFlow.TO_SERVER, 0x00, new ServerboundEncryptionPacket());
     public static final Protocol<ServerboundActionResponsePacket, ServerboundActionResponseMessage> S_ACTION_RESPONSE = new Protocol<>(PacketFlow.TO_SERVER, 0x01, new ServerboundActionResponsePacket());
+    public static final Protocol<ServerboundCheckRankExpirationPacket, ServerboundCheckRankExpirationMessage> S_CHECK_RANK_EXPIRATION = new Protocol<>(PacketFlow.TO_SERVER, 0x02, new ServerboundCheckRankExpirationPacket());
 
     private final PacketFlow packetFlow;
     private final byte id;
