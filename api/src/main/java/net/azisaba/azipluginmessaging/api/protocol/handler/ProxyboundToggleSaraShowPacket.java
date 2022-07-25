@@ -45,7 +45,7 @@ public class ProxyboundToggleSaraShowPacket implements ProxyMessageHandler<Playe
         boolean modified = false;
         Track track = api.getTrackManager().createAndLoadTrack("sara").join();
         for (String groupName : track.getGroups()) {
-            int yen = Integer.parseInt(groupName.replace("sara", ""));
+            int yen = Integer.parseInt(groupName.replace("yen", ""));
             Node nodeSara = LuckPermsUtil.findParentNode(map, groupName, null);
             Node nodeHideSara = LuckPermsUtil.findParentNode(map, "hide" + yen, null);
             if (nodeSara != null || nodeHideSara != null) {
