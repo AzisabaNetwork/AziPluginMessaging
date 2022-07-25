@@ -2,11 +2,11 @@ package net.azisaba.azipluginmessaging.api.protocol;
 
 public enum PacketFlow {
     /**
-     * Server (Backend) -> Proxy
+     * Server (Backend) to Proxy
      */
     TO_PROXY,
     /**
-     * Proxy -> Server (Backend)
+     * Proxy to Server (Backend)
      */
     TO_SERVER,
 }
