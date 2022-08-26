@@ -14,6 +14,18 @@ dependencies {
 }
 
 tasks {
+    processResources {
+        from(sourceSets.main.get().resources.srcDirs) {
+            include("**")
+            val tokenReplacementMap = mapOf(
+                "VERSION" to project.version
+            )
+            filter<org.apache.tools.ant.filters.ReplaceTokens>("tokens" to tokenReplacementMap)
+        }
+        filteringCharset = "UTF-8"
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+
     shadowJar {
         archiveFileName.set("AziPluginMessaging-Spigot-${project.version}.jar")
     }

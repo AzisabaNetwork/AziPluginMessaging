@@ -2,7 +2,6 @@ package net.azisaba.azipluginmessaging.api.server;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.security.KeyPair;
 import java.security.PublicKey;
 
 /**

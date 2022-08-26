@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerConnectionImpl implements ServerConnection {
     private static long lastCleaned = System.currentTimeMillis();
@@ -26,6 +27,7 @@ public class ServerConnectionImpl implements ServerConnection {
     private KeyPair keyPair;
     private PublicKey publicKey;
     private boolean encrypted = false;
+    private final AtomicBoolean encryptedOnce = new AtomicBoolean(false);
 
     public ServerConnectionImpl(@NotNull com.velocitypowered.api.proxy.ServerConnection handle) {
         this.handle = handle;
@@ -83,6 +85,16 @@ public class ServerConnectionImpl implements ServerConnection {
     @Override
     public boolean isEncrypted() {
         return encrypted;
+    }
+
+    @Override
+    public void setEncryptedOnce() {
+        encryptedOnce.set(true);
+    }
+
+    @Override
+    public boolean consumeEncryptedOnce() {
+        return encryptedOnce.compareAndSet(true, false);
     }
 
     @Override

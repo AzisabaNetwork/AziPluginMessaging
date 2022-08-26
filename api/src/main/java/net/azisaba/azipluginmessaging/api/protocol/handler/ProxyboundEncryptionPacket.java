@@ -1,6 +1,5 @@
 package net.azisaba.azipluginmessaging.api.protocol.handler;
 
-import net.azisaba.azipluginmessaging.api.AziPluginMessagingConfig;
 import net.azisaba.azipluginmessaging.api.Logger;
 import net.azisaba.azipluginmessaging.api.protocol.Protocol;
 import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
@@ -40,11 +39,7 @@ public class ProxyboundEncryptionPacket implements ProxyMessageHandler<Encryptio
             Logger.getCurrentLogger().warn("Failed to send public key to the server " + sender);
         }
 
-        // Enable encryption
-        sender.setEncrypted(true);
-
-        if (AziPluginMessagingConfig.debug) {
-            Logger.getCurrentLogger().info("Encryption enabled for " + sender);
-        }
+        // Enable encryption here, otherwise we will not be able to receive the encrypted response
+        sender.setEncryptedOnce();
     }
 }

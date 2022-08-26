@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PlayerImpl implements Player, PacketSender {
@@ -25,6 +26,7 @@ public class PlayerImpl implements Player, PacketSender {
     private boolean encrypted = false;
     public String challenge = null;
     public AtomicInteger joins = new AtomicInteger();
+    private final AtomicBoolean encryptedOnce = new AtomicBoolean(false);
 
     @Contract(value = "null -> fail", pure = true)
     private PlayerImpl(@Nullable org.bukkit.entity.Player handle) {
@@ -88,6 +90,16 @@ public class PlayerImpl implements Player, PacketSender {
     @Override
     public boolean isEncrypted() {
         return this.encrypted;
+    }
+
+    @Override
+    public void setEncryptedOnce() {
+        encryptedOnce.set(true);
+    }
+
+    @Override
+    public boolean consumeEncryptedOnce() {
+        return encryptedOnce.compareAndSet(true, false);
     }
 
     @NotNull

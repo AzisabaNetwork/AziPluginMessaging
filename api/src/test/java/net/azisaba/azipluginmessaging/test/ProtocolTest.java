@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 public class ProtocolTest {
     @Test
     public void load() {
+        // check packets
         Protocol.getById(PacketFlow.TO_SERVER, (byte) 0);
     }
 }

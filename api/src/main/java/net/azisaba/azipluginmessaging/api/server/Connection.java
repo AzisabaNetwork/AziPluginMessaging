@@ -21,6 +21,10 @@ public interface Connection {
      */
     boolean isEncrypted();
 
+    void setEncryptedOnce();
+
+    boolean consumeEncryptedOnce();
+
     /**
      * Gets the local key pair for encrypting packets.
      * @return the local key pair

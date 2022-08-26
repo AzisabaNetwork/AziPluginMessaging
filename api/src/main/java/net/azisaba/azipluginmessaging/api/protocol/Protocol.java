@@ -8,6 +8,7 @@ import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyMessageHandler;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundCheckRankExpirationPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundClearPrefixPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundEncryptionPacket;
+import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundEncryptionResponsePacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundGiveGamingSaraPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundGiveNitroSaraPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ProxyboundGiveSaraPacket;
@@ -21,6 +22,8 @@ import net.azisaba.azipluginmessaging.api.protocol.handler.ServerMessageHandler;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ServerboundActionResponsePacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ServerboundCheckRankExpirationPacket;
 import net.azisaba.azipluginmessaging.api.protocol.handler.ServerboundEncryptionPacket;
+import net.azisaba.azipluginmessaging.api.protocol.handler.ServerboundEncryptionResponsePacket;
+import net.azisaba.azipluginmessaging.api.protocol.message.EmptyMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.EncryptionMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.Message;
 import net.azisaba.azipluginmessaging.api.protocol.message.PlayerMessage;
@@ -47,6 +50,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class Protocol<T extends MessageHandler<M>, M extends Message> {
@@ -64,21 +68,23 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     public static final String CHANNEL_ID = "azipm:main";
 
     public static final Protocol<ProxyboundEncryptionPacket, EncryptionMessage> P_ENCRYPTION = new Protocol<>(PacketFlow.TO_PROXY, 0x00, new ProxyboundEncryptionPacket());
-    public static final Protocol<ProxyboundSetRankPacket, ProxyboundSetRankMessage> P_SET_RANK = new Protocol<>(PacketFlow.TO_PROXY, 0x01, new ProxyboundSetRankPacket());
-    public static final Protocol<ProxyboundGiveGamingSaraPacket, PlayerMessage> P_GIVE_GAMING_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x02, new ProxyboundGiveGamingSaraPacket());
-    public static final Protocol<ProxyboundGiveSaraPacket, ProxyboundGiveSaraMessage> P_GIVE_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x03, new ProxyboundGiveSaraPacket());
-    public static final Protocol<ProxyboundToggleGamingSaraPacket, PlayerMessage> P_TOGGLE_GAMING_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x04, new ProxyboundToggleGamingSaraPacket());
-    public static final Protocol<ProxyboundToggleSaraHidePacket, PlayerMessage> P_TOGGLE_SARA_HIDE = new Protocol<>(PacketFlow.TO_PROXY, 0x05, new ProxyboundToggleSaraHidePacket()); // non-contextual
-    public static final Protocol<ProxyboundToggleSaraShowPacket, PlayerWithServerMessage> P_TOGGLE_SARA_SHOW = new Protocol<>(PacketFlow.TO_PROXY, 0x06, new ProxyboundToggleSaraShowPacket()); // contextual
-    public static final Protocol<ProxyboundSetPrefixPacket, ProxyboundSetPrefixMessage> P_SET_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x07, new ProxyboundSetPrefixPacket()); // may be contextual
-    public static final Protocol<ProxyboundClearPrefixPacket, ProxyboundClearPrefixMessage> P_CLEAR_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x08, new ProxyboundClearPrefixPacket()); // may be contextual
-    public static final Protocol<ProxyboundGiveNitroSaraPacket, ProxyboundGiveNitroSaraMessage> P_GIVE_NITRO_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x09, new ProxyboundGiveNitroSaraPacket());
-    public static final Protocol<ProxyboundToggleNitroSaraPacket, PlayerMessage> P_TOGGLE_NITRO_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x0A, new ProxyboundToggleNitroSaraPacket());
-    public static final Protocol<ProxyboundCheckRankExpirationPacket, ProxyboundCheckRankExpirationMessage> P_CHECK_RANK_EXPIRATION = new Protocol<>(PacketFlow.TO_PROXY, 0x0B, new ProxyboundCheckRankExpirationPacket());
+    public static final Protocol<ProxyboundEncryptionResponsePacket, EmptyMessage> P_ENCRYPTION_RESPONSE = new Protocol<>(PacketFlow.TO_PROXY, 0x01, new ProxyboundEncryptionResponsePacket());
+    public static final Protocol<ProxyboundSetRankPacket, ProxyboundSetRankMessage> P_SET_RANK = new Protocol<>(PacketFlow.TO_PROXY, 0x02, new ProxyboundSetRankPacket());
+    public static final Protocol<ProxyboundGiveGamingSaraPacket, PlayerMessage> P_GIVE_GAMING_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x03, new ProxyboundGiveGamingSaraPacket());
+    public static final Protocol<ProxyboundGiveSaraPacket, ProxyboundGiveSaraMessage> P_GIVE_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x04, new ProxyboundGiveSaraPacket());
+    public static final Protocol<ProxyboundToggleGamingSaraPacket, PlayerMessage> P_TOGGLE_GAMING_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x05, new ProxyboundToggleGamingSaraPacket());
+    public static final Protocol<ProxyboundToggleSaraHidePacket, PlayerMessage> P_TOGGLE_SARA_HIDE = new Protocol<>(PacketFlow.TO_PROXY, 0x06, new ProxyboundToggleSaraHidePacket()); // non-contextual
+    public static final Protocol<ProxyboundToggleSaraShowPacket, PlayerWithServerMessage> P_TOGGLE_SARA_SHOW = new Protocol<>(PacketFlow.TO_PROXY, 0x07, new ProxyboundToggleSaraShowPacket()); // contextual
+    public static final Protocol<ProxyboundSetPrefixPacket, ProxyboundSetPrefixMessage> P_SET_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x08, new ProxyboundSetPrefixPacket()); // may be contextual
+    public static final Protocol<ProxyboundClearPrefixPacket, ProxyboundClearPrefixMessage> P_CLEAR_PREFIX = new Protocol<>(PacketFlow.TO_PROXY, 0x09, new ProxyboundClearPrefixPacket()); // may be contextual
+    public static final Protocol<ProxyboundGiveNitroSaraPacket, ProxyboundGiveNitroSaraMessage> P_GIVE_NITRO_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x0A, new ProxyboundGiveNitroSaraPacket());
+    public static final Protocol<ProxyboundToggleNitroSaraPacket, PlayerMessage> P_TOGGLE_NITRO_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x0B, new ProxyboundToggleNitroSaraPacket());
+    public static final Protocol<ProxyboundCheckRankExpirationPacket, ProxyboundCheckRankExpirationMessage> P_CHECK_RANK_EXPIRATION = new Protocol<>(PacketFlow.TO_PROXY, 0x0C, new ProxyboundCheckRankExpirationPacket());
 
     public static final Protocol<ServerboundEncryptionPacket, EncryptionMessage> S_ENCRYPTION = new Protocol<>(PacketFlow.TO_SERVER, 0x00, new ServerboundEncryptionPacket());
-    public static final Protocol<ServerboundActionResponsePacket, ServerboundActionResponseMessage> S_ACTION_RESPONSE = new Protocol<>(PacketFlow.TO_SERVER, 0x01, new ServerboundActionResponsePacket());
-    public static final Protocol<ServerboundCheckRankExpirationPacket, ServerboundCheckRankExpirationMessage> S_CHECK_RANK_EXPIRATION = new Protocol<>(PacketFlow.TO_SERVER, 0x02, new ServerboundCheckRankExpirationPacket());
+    public static final Protocol<ServerboundEncryptionResponsePacket, EmptyMessage> S_ENCRYPTION_RESPONSE = new Protocol<>(PacketFlow.TO_SERVER, 0x01, new ServerboundEncryptionResponsePacket());
+    public static final Protocol<ServerboundActionResponsePacket, ServerboundActionResponseMessage> S_ACTION_RESPONSE = new Protocol<>(PacketFlow.TO_SERVER, 0x02, new ServerboundActionResponsePacket());
+    public static final Protocol<ServerboundCheckRankExpirationPacket, ServerboundCheckRankExpirationMessage> S_CHECK_RANK_EXPIRATION = new Protocol<>(PacketFlow.TO_SERVER, 0x03, new ServerboundCheckRankExpirationPacket());
 
     private final PacketFlow packetFlow;
     private final byte id;
@@ -186,7 +192,8 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
      */
     public static void handleProxySide(ServerConnection server, byte[] rawData) {
         byte[] data;
-        if (server.isEncrypted()) {
+        boolean encrypted = server.isEncrypted() || server.consumeEncryptedOnce();
+        if (encrypted) {
             try {
                 data = EncryptionUtil.decrypt(rawData, server.getKeyPair().getPrivate());
             } catch (Exception e) {
@@ -198,7 +205,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
         try (ByteArrayInputStream bin = new ByteArrayInputStream(data);
              DataInputStream in = new DataInputStream(bin)) {
             byte id = (byte) (in.readByte() & 0xFF);
-            if (id != 0 && !server.isEncrypted()) {
+            if (id != 0 && !encrypted) {
                 throw new RuntimeException("Packet " + id + " must be received encrypted (server: " + server + ")");
             }
             Protocol<?, ?> protocol = Protocol.getById(PacketFlow.TO_PROXY, id);
@@ -219,6 +226,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
             @SuppressWarnings("unchecked")
             ProxyMessageHandler<Message> handler = (ProxyMessageHandler<Message>) protocol.getHandler();
             Message message = handler.read(server, in);
+            Objects.requireNonNull(message, "handler.read(in) returned null");
             handler.handle(server, message);
         } catch (Exception | AssertionError e) {
             Logger.getCurrentLogger().warn("Failed to handle plugin message from " + server, e);
@@ -233,7 +241,8 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
      */
     public static void handleServerSide(@NotNull PacketSender sender, byte[] rawData) {
         byte[] data;
-        if (sender.isEncrypted()) {
+        boolean encrypted = sender.isEncrypted() || sender.consumeEncryptedOnce();
+        if (encrypted) {
             try {
                 data = EncryptionUtil.decrypt(rawData, sender.getKeyPair().getPrivate());
             } catch (Exception e) {
@@ -245,7 +254,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
         try (ByteArrayInputStream bin = new ByteArrayInputStream(data);
              DataInputStream in = new DataInputStream(bin)) {
             byte id = (byte) (in.readByte() & 0xFF);
-            if (id != 0 && !sender.isEncrypted()) {
+            if (id != 0 && !encrypted) {
                 throw new RuntimeException("Packet " + id + " must be received encrypted (sender: " + sender + ")");
             }
             Protocol<?, ?> protocol = Protocol.getById(PacketFlow.TO_SERVER, id);
@@ -264,6 +273,7 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
             @SuppressWarnings("unchecked")
             ServerMessageHandler<Message> handler = (ServerMessageHandler<Message>) protocol.getHandler();
             Message message = handler.read(in);
+            Objects.requireNonNull(message, "handler.read(in) returned null");
             handler.handle(sender, message);
         } catch (Exception | AssertionError e) {
             Logger.getCurrentLogger().warn("Failed to handle plugin message from " + sender, e);
