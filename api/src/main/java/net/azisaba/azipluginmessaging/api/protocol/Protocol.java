@@ -227,6 +227,12 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
             ProxyMessageHandler<Message> handler = (ProxyMessageHandler<Message>) protocol.getHandler();
             Message message = handler.read(server, in);
             Objects.requireNonNull(message, "handler.read(in) returned null");
+            if (in.available() > 0) {
+                Logger.getCurrentLogger().error(
+                        "Received extra data after message {} from server connection {}: {} of {} bytes remaining",
+                        message, server, in.available(), data.length);
+                //throw new RuntimeException("Received extra data after message " + message + " from server connection " + server + ": " + in.available() + " of " + data.length + " bytes remaining");
+            }
             handler.handle(server, message);
         } catch (Exception | AssertionError e) {
             Logger.getCurrentLogger().warn("Failed to handle plugin message from " + server, e);
@@ -274,6 +280,12 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
             ServerMessageHandler<Message> handler = (ServerMessageHandler<Message>) protocol.getHandler();
             Message message = handler.read(in);
             Objects.requireNonNull(message, "handler.read(in) returned null");
+            if (in.available() > 0) {
+                Logger.getCurrentLogger().error(
+                        "Received extra data after message {} from {}: {} of {} bytes remaining",
+                        message, sender, in.available(), data.length);
+                //throw new RuntimeException("Received extra data after message " + message + " from " + sender + ": " + in.available() + " of " + data.length + " bytes remaining");
+            }
             handler.handle(sender, message);
         } catch (Exception | AssertionError e) {
             Logger.getCurrentLogger().warn("Failed to handle plugin message from " + sender, e);
