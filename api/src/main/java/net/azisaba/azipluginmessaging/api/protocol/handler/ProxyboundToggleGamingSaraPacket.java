@@ -42,7 +42,7 @@ public class ProxyboundToggleGamingSaraPacket implements ProxyMessageHandler<Pla
         NodeMap map = user.getData(DataType.NORMAL);
         Node nodeChange = LuckPermsUtil.findParentNode(map, "change" + name, null);
         if (nodeChange == null) {
-            Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7c権限がありません。皿を持ってるのにこのメッセージが出る場合はアジ鯖サポートに泣きつきましょう！"));
+            Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7c権限がありません。皿を持ってるのにこのメッセージが出る場合は公式Discordのサポートまでお問い合わせください。"));
             throw new MissingPermissionException("User " + msg.getPlayer().getUniqueId() + " does not have the group 'change" + name + "'.");
         }
         char p;
