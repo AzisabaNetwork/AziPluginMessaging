@@ -9,7 +9,6 @@ import net.azisaba.azipluginmessaging.api.server.ServerConnection;
 import net.azisaba.azipluginmessaging.api.util.LuckPermsUtil;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.actionlog.Action;
 import net.luckperms.api.model.data.DataType;
 import net.luckperms.api.model.data.NodeMap;
 import net.luckperms.api.model.user.User;
@@ -18,8 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.time.Instant;
-import java.util.UUID;
 
 public class ProxyboundToggleGamingSaraPacket implements ProxyMessageHandler<PlayerMessage> {
     @Override
@@ -38,35 +35,21 @@ public class ProxyboundToggleGamingSaraPacket implements ProxyMessageHandler<Pla
         if (user == null || user.getUsername() == null) {
             throw new IllegalArgumentException("User " + msg.getPlayer().getUniqueId() + " could not be found in the LuckPerms database.");
         }
-        String username = user.getUsername();
         NodeMap map = user.getData(DataType.NORMAL);
         Node nodeChange = LuckPermsUtil.findParentNode(map, "change" + name, null);
         if (nodeChange == null) {
             Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7c権限がありません。皿を持ってるのにこのメッセージが出る場合は公式Discordのサポートまでお問い合わせください。"));
             throw new MissingPermissionException("User " + msg.getPlayer().getUniqueId() + " does not have the group 'change" + name + "'.");
         }
-        char p;
         Node node = LuckPermsUtil.findParentNode(map, name, null);
         if (node != null) {
             map.remove(node);
             Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7a" + name + "皿を非表示にしました。"));
-            p = '-';
         } else {
             LuckPermsUtil.addGroup(map, name, null, -1);
             Protocol.S_ACTION_RESPONSE.sendPacket(sender, new ServerboundActionResponseMessage(msg.getPlayer().getUniqueId(), "\u00a7a" + name + "皿を表示しました。"));
-            p = '+';
         }
         api.getUserManager().saveUser(user);
         api.getMessagingService().ifPresent(service -> service.pushUserUpdate(user));
-        api.getActionLogger().submit(
-                Action.builder()
-                        .targetType(Action.Target.Type.USER)
-                        .timestamp(Instant.now())
-                        .source(new UUID(0L, 0L))
-                        .sourceName("AziPluginMessaging@" + api.getServerName())
-                        .target(msg.getPlayer().getUniqueId())
-                        .targetName(username)
-                        .description("Toggled " + p + name + " for " + username)
-                        .build());
     }
 }

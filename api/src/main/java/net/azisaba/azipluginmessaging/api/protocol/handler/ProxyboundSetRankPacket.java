@@ -51,6 +51,7 @@ public class ProxyboundSetRankPacket implements ProxyMessageHandler<ProxyboundSe
         for (String group : groups) {
             if (LuckPermsUtil.findParentNode(nodes, group, msg.getServer()) != null) {
                 if (groups.indexOf(group) >= rankIndex) {
+                    api.getMessagingService().ifPresent(service -> service.pushUserUpdate(user));
                     throw new IllegalArgumentException(msg.getPlayer().getUsernameOrUniqueId() +
                             " already inherits the same or higher rank in the track: " + msg.getRank());
                 }

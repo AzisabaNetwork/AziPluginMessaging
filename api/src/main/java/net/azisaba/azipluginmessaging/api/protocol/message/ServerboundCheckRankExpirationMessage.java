@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +45,15 @@ public class ServerboundCheckRankExpirationMessage extends PlayerMessage {
         return expiresAt;
     }
 
+    @NotNull
+    public Instant getExpiresAtInstant() {
+        return Instant.ofEpochMilli(expiresAt);
+    }
+
+    /**
+     * @deprecated this method does not make any sense; this method should never be used.
+     */
+    @Deprecated
     public long getExpiresAt(@NotNull TimeUnit unit) {
         return unit.convert(expiresAt, TimeUnit.MILLISECONDS);
     }

@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Plugin(id = "azi-plugin-messaging", name = "AziPluginMessaging", version = "2.3.0-SNAPSHOT",
+@Plugin(id = "azi-plugin-messaging", name = "AziPluginMessaging", version = "4.0.0",
         dependencies = @Dependency(id = "luckperms"))
 public class VelocityPlugin {
     private final Map<UUID, Long> lastTempRankChecked = new ConcurrentHashMap<>();
