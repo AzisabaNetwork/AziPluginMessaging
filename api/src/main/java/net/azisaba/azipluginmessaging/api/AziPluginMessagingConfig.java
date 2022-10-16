@@ -23,6 +23,8 @@ public class AziPluginMessagingConfig {
     public static final Map<String, String> servers = new ConcurrentHashMap<>();
     public static final Map<String, String> saraShowServers = new ConcurrentHashMap<>();
     public static final Map<String, String> rankableServers = new ConcurrentHashMap<>();
+    @SuppressWarnings("DeprecatedIsStillUsed") // not used outside this class
+    @Deprecated
     public static final Map<String, String> contextualServers = new ConcurrentHashMap<>();
 
     /**
@@ -78,6 +80,7 @@ public class AziPluginMessagingConfig {
                                 "# This is used for situations where saraShowServers/rankableServers does not apply.",
                                 "# This map is used in:",
                                 "# - ProxyboundSetPrefixPacket",
+                                "# - ProxyboundClearPrefixPacket",
                                 "servers: # this is meaningless in spigot",
                                 "  life: life",
                                 "  lifepve: life",
@@ -91,11 +94,6 @@ public class AziPluginMessagingConfig {
                                 "# Map of servers that ProxyboundSetRankPacket is allowed on.",
                                 "# When the proxy receives a packet from non-enabled server, the proxy will drop the packet.",
                                 "rankableServers: # this is meaningless in spigot",
-                                "  life: life",
-                                "  lifepve: life",
-                                "",
-                                "# for ProxyboundSetPrefixPacket and ProxyboundClearPrefixPacket",
-                                "contextualServers:",
                                 "  life: life",
                                 "  lifepve: life",
                                 "",
@@ -136,10 +134,11 @@ public class AziPluginMessagingConfig {
             YamlObject obj = new YamlConfiguration(configPath.toAbsolutePath().toString()).asObject();
             debug = obj.getBoolean("debug", false);
             if (AziPluginMessagingProvider.get().getEnvironmentType() == EnvironmentType.VELOCITY) {
+                readMap(contextualServers, obj, "contextualServers", true);
+                servers.putAll(contextualServers);
                 readMap(servers, obj, "servers");
                 readMap(rankableServers, obj, "rankableServers");
                 readMap(saraShowServers, obj, "saraShowServers");
-                readMap(contextualServers, obj, "contextualServers");
                 AziPluginMessagingProvider.get().getProxy().loadConfig(obj);
             }
         } catch (IOException ex) {
@@ -148,8 +147,15 @@ public class AziPluginMessagingConfig {
     }
 
     private static void readMap(@NotNull Map<String, String> to, @NotNull YamlObject obj, @NotNull String configKey) {
+        readMap(to, obj, configKey, false);
+    }
+
+    private static void readMap(@NotNull Map<String, String> to, @NotNull YamlObject obj, @NotNull String configKey, boolean deprecated) {
         YamlObject mapObject = obj.getObject(configKey);
         if (mapObject != null) {
+            if (deprecated) {
+                Logger.getCurrentLogger().warn("The configuration key '" + configKey + "' is deprecated and will be removed in the future.");
+            }
             mapObject.getRawData().forEach((key, value) -> to.put(key, String.valueOf(value)));
         }
     }

@@ -21,7 +21,7 @@ public class ProxyboundSetPrefixPacket implements ProxyMessageHandler<Proxybound
     @Override
     public @NotNull ProxyboundSetPrefixMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {
         String serverName = server.getServerInfo().getName();
-        serverName = AziPluginMessagingConfig.contextualServers.getOrDefault(serverName, serverName);
+        serverName = AziPluginMessagingConfig.servers.getOrDefault(serverName, serverName);
         return ProxyboundSetPrefixMessage.read(serverName, in);
     }
 

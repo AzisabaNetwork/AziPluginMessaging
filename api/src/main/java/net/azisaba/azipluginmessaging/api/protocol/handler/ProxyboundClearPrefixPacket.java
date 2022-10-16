@@ -21,7 +21,7 @@ public class ProxyboundClearPrefixPacket implements ProxyMessageHandler<Proxybou
     @Override
     public @NotNull ProxyboundClearPrefixMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {
         String serverName = server.getServerInfo().getName();
-        serverName = AziPluginMessagingConfig.contextualServers.getOrDefault(serverName, serverName);
+        serverName = AziPluginMessagingConfig.servers.getOrDefault(serverName, serverName);
         return ProxyboundClearPrefixMessage.read(serverName, in);
     }
 
