@@ -3,6 +3,7 @@ package net.azisaba.azipluginmessaging.velocity;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
@@ -24,14 +25,21 @@ import java.util.concurrent.TimeUnit;
 @Plugin(id = "azi-plugin-messaging", name = "AziPluginMessaging", version = "4.0.0",
         dependencies = @Dependency(id = "luckperms"))
 public class VelocityPlugin {
+    private final ProxyServer server;
+
     @Inject
     public VelocityPlugin(@NotNull ProxyServer server, @NotNull Logger logger) {
+        this.server = server;
         server.getChannelRegistrar().register(new LegacyChannelIdentifier(Protocol.LEGACY_CHANNEL_ID));
         server.getChannelRegistrar().register(MinecraftChannelIdentifier.from(Protocol.CHANNEL_ID));
         AziPluginMessagingVelocity api = new AziPluginMessagingVelocity(server, logger);
         AziPluginMessagingProviderProvider.register(api);
         AziPluginMessagingConfig.reload();
         DBConnector.init();
+    }
+
+    @Subscribe
+    public void onProxyInitialization(ProxyInitializeEvent e) {
         server.getScheduler()
                 .buildTask(this, () -> {
                     // check rank expiration
