@@ -3,10 +3,10 @@ package net.azisaba.azipluginmessaging.velocity;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
@@ -19,15 +19,11 @@ import net.azisaba.azipluginmessaging.velocity.server.ServerConnectionImpl;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "azi-plugin-messaging", name = "AziPluginMessaging", version = "4.0.0",
         dependencies = @Dependency(id = "luckperms"))
 public class VelocityPlugin {
-    private final Map<UUID, Long> lastTempRankChecked = new ConcurrentHashMap<>();
-
     @Inject
     public VelocityPlugin(@NotNull ProxyServer server, @NotNull Logger logger) {
         server.getChannelRegistrar().register(new LegacyChannelIdentifier(Protocol.LEGACY_CHANNEL_ID));
@@ -36,6 +32,16 @@ public class VelocityPlugin {
         AziPluginMessagingProviderProvider.register(api);
         AziPluginMessagingConfig.reload();
         DBConnector.init();
+        server.getScheduler()
+                .buildTask(this, () -> {
+                    // check rank expiration
+                    for (Player player : server.getAllPlayers()) {
+                        AziPluginMessagingProvider.get().getProxy().checkRankAsync(player.getUniqueId());
+                    }
+                })
+                .repeat(30, TimeUnit.MINUTES)
+                .delay(30, TimeUnit.MINUTES)
+                .schedule();
     }
 
     @Subscribe
@@ -53,19 +59,5 @@ public class VelocityPlugin {
         }
         Protocol.handleProxySide(new ServerConnectionImpl((ServerConnection) e.getSource()), e.getData());
         e.setResult(PluginMessageEvent.ForwardResult.handled());
-    }
-
-    // check rank expiration
-    @Subscribe
-    public void onServerPostConnect(@NotNull ServerConnectedEvent e) {
-        // check lastTempRankChecked
-        if (lastTempRankChecked.containsKey(e.getPlayer().getUniqueId())) {
-            long lastChecked = lastTempRankChecked.get(e.getPlayer().getUniqueId());
-            if (System.currentTimeMillis() - lastChecked < 1000 * 60 * 30) { // skip if the rank was checked within 30 minutes
-                return;
-            }
-        }
-        lastTempRankChecked.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
-        AziPluginMessagingProvider.get().getProxy().checkRankAsync(e.getPlayer().getUniqueId());
     }
 }
