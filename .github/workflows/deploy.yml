@@ -3,6 +3,8 @@ name: Deploy
 on:
   workflow_dispatch:
   push:
+    branches:
+      - '**'
     paths-ignore:
       - "**.md"
       - "renovate.json"
@@ -25,4 +27,4 @@ jobs:
           echo "repoUsername=${{ secrets.REPO_USERNAME }}" >> $HOME/.gradle/gradle.properties
           echo "repoPassword=${{ secrets.REPO_PASSWORD }}" >> $HOME/.gradle/gradle.properties
       - name: Deploy
-        run: ./gradlew clean publish
+        run: ./gradlew clean test publish
