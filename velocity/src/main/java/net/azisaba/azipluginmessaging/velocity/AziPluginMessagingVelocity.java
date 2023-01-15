@@ -115,7 +115,7 @@ public class AziPluginMessagingVelocity implements AziPluginMessaging {
 
         @Override
         public void checkRankAsync(@NotNull UUID uuid) {
-            DBConnector.runPreparedStatement("SELECT `rank`, `expires_at`, `clear_prefix_on_expire` FROM `temp_rank` WHERE `player_uuid` = ? AND `expires_at` > 0 AND `expires_at` < CURRENT_TIMESTAMP", ps -> {
+            DBConnector.runPreparedStatement("SELECT `rank`, `expires_at`, `clear_prefix_on_expire` FROM `temp_rank` WHERE `player_uuid` = ? AND `expires_at` > 0 AND `expires_at` < ?", ps -> {
                 LuckPerms lp = LuckPermsProvider.get();
                 User user = lp.getUserManager().getUser(uuid);
                 if (user == null) {
@@ -128,6 +128,7 @@ public class AziPluginMessagingVelocity implements AziPluginMessaging {
                     return;
                 }
                 ps.setString(1, uuid.toString());
+                ps.setLong(2, System.currentTimeMillis());
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     String rank = rs.getString("rank");
