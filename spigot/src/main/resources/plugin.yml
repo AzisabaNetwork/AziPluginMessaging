@@ -1,6 +1,7 @@
 name: AziPluginMessaging
 main: net.azisaba.azipluginmessaging.spigot.SpigotPlugin
 version: @VERSION@
+api-version: 1.13
 depend:
   - LuckPerms
 commands:
