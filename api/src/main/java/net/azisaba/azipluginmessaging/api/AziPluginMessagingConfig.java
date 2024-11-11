@@ -1,5 +1,6 @@
 package net.azisaba.azipluginmessaging.api;
 
+import net.azisaba.azipluginmessaging.api.yaml.YamlArray;
 import net.azisaba.azipluginmessaging.api.yaml.YamlConfiguration;
 import net.azisaba.azipluginmessaging.api.yaml.YamlObject;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AziPluginMessagingConfig {
@@ -23,6 +25,7 @@ public class AziPluginMessagingConfig {
     public static final Map<String, String> servers = new ConcurrentHashMap<>();
     public static final Map<String, String> saraShowServers = new ConcurrentHashMap<>();
     public static final Map<String, String> rankableServers = new ConcurrentHashMap<>();
+    public static final Set<String> unpunishableServers = ConcurrentHashMap.newKeySet();
     @SuppressWarnings("DeprecatedIsStillUsed") // not used outside this class
     @Deprecated
     public static final Map<String, String> contextualServers = new ConcurrentHashMap<>();
@@ -97,13 +100,17 @@ public class AziPluginMessagingConfig {
                                 "  life: life",
                                 "  lifepve: life",
                                 "",
+                                "# List of servers that ProxyboundPunishPacket is not allowed on.",
+                                "unpunishableServers: # this is meaningless in spigot",
+                                "  - life9000",
+                                "",
                                 "# Database settings (required)",
                                 "# This setting is used for setting the rank temporary.",
                                 "database:",
                                 "  # (scheme)://(host):(port)/(database)",
                                 "  # Keep the line commented out unless you get an obvious error message indicating that the driver was not found.",
                                 "  # Default driver (net.azisaba.taxoffice.libs.org.mariadb.jdbc.Driver) points to the bundled MariaDB driver in the TaxOffice jar.",
-                                "  #driver: net.azisaba.taxoffice.libs.org.mariadb.jdbc.Driver",
+                                "  #driver: net.azisaba.azipluginmessaging.libs.org.mariadb.jdbc.Driver",
                                 "",
                                 "  # change to jdbc:mysql if you want to use MySQL instead of MariaDB",
                                 "  scheme: jdbc:mariadb",
@@ -139,6 +146,7 @@ public class AziPluginMessagingConfig {
                 readMap(servers, obj, "servers");
                 readMap(rankableServers, obj, "rankableServers");
                 readMap(saraShowServers, obj, "saraShowServers");
+                readSet(unpunishableServers, obj, "unpunishableServers");
                 AziPluginMessagingProvider.get().getProxy().loadConfig(obj);
             }
         } catch (IOException ex) {
@@ -157,6 +165,13 @@ public class AziPluginMessagingConfig {
                 Logger.getCurrentLogger().warn("The configuration key '" + configKey + "' is deprecated and will be removed in the future.");
             }
             mapObject.getRawData().forEach((key, value) -> to.put(key, String.valueOf(value)));
+        }
+    }
+
+    private static void readSet(@NotNull Set<String> to, @NotNull YamlObject obj, @NotNull String configKey) {
+        YamlArray array = obj.getArray(configKey);
+        if (array != null) {
+            to.addAll(array.mapToString());
         }
     }
 }

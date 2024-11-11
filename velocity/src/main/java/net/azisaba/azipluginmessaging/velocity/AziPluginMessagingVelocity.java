@@ -2,17 +2,26 @@ package net.azisaba.azipluginmessaging.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.azisaba.azipluginmessaging.api.AziPluginMessaging;
-import net.azisaba.azipluginmessaging.api.AziPluginMessagingProvider;
-import net.azisaba.azipluginmessaging.api.EnvironmentType;
-import net.azisaba.azipluginmessaging.api.Logger;
+import net.azisaba.azipluginmessaging.api.*;
 import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.protocol.PacketQueue;
+import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundPunishMessage;
 import net.azisaba.azipluginmessaging.api.util.LuckPermsUtil;
 import net.azisaba.azipluginmessaging.api.util.SQLThrowableConsumer;
 import net.azisaba.azipluginmessaging.api.util.SQLThrowableFunction;
 import net.azisaba.azipluginmessaging.api.yaml.YamlObject;
 import net.azisaba.azipluginmessaging.velocity.entity.PlayerImpl;
+import net.azisaba.azipluginmessaging.velocity.entity.SimplePlayerActor;
+import net.azisaba.azipluginmessaging.velocity.util.DurationUtil;
+import net.azisaba.azipluginmessaging.velocity.util.StringUtil;
+import net.azisaba.spicyAzisaBan.SpicyAzisaBan;
+import net.azisaba.spicyAzisaBan.commands.*;
+import net.azisaba.spicyAzisaBan.common.Actor;
+import net.azisaba.spicyAzisaBan.struct.PlayerData;
+import net.azisaba.spicyAzisaBan.util.contexts.PlayerContext;
+import net.azisaba.spicyAzisaBan.util.contexts.ReasonContext;
+import net.azisaba.spicyAzisaBan.util.contexts.ServerContext;
+import net.azisaba.spicyAzisaBan.util.contexts.TimeContext;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.actionlog.Action;
@@ -164,6 +173,126 @@ public class AziPluginMessagingVelocity implements AziPluginMessaging {
                                     .build());
                 }
             });
+        }
+
+        @Override
+        public void handle(@NotNull ProxyboundPunishMessage msg) {
+            logger.info("Processing punish message:");
+            logger.info("  - Type: {}", msg.getType());
+            logger.info("  - Player: {}", msg.getPlayer());
+            logger.info("  - Sender: {}", msg.getSender());
+            logger.info("  - Server: {}", msg.getServer());
+            logger.info("  - Reason: {}", msg.getReason());
+            logger.info("  - Time: {}", msg.getTime());
+            logger.info("  - Unit: {}", msg.getUnit());
+            if (AziPluginMessagingConfig.unpunishableServers.contains(msg.getServer())) {
+                logger.warn("Failed to handle punishment for {} because the server is unpunishable", msg.getPlayer().getUniqueId());
+                return;
+            }
+            PlayerData.Companion.getByUUID(msg.getPlayer().getUniqueId())
+                    .onCatch(e -> {})
+                    .thenDo(player -> {
+                        if (player == null) {
+                            logger.warn("Failed to handle punishment for {} because the player data does not exist on SpicyAzisaBan database", msg.getPlayer().getUniqueId());
+                            return;
+                        }
+                        Actor senderActor;
+                        PlayerData sender = PlayerData.Companion.getByUUID(msg.getSender().getUniqueId()).onCatch(e -> {}).complete();
+                        if (sender == null) {
+                            if (msg.getSender().getUniqueId().equals(new UUID(0L, 0L))) {
+                                senderActor = SpicyAzisaBan.instance.getConsoleActor();
+                            } else {
+                                logger.warn("Failed to handle punishment for {} because the sender data does not exist on SpicyAzisaBan database", msg.getSender().getUniqueId());
+                                return;
+                            }
+                        } else {
+                            senderActor = new SimplePlayerActor(sender);
+                        }
+                        switch (msg.getType()) {
+                            case BAN -> BanCommand.INSTANCE.doBan(
+                                    senderActor,
+                                    new PlayerContext(true, player),
+                                    new ServerContext(true, msg.getServer(), false),
+                                    new ReasonContext(msg.getReason()),
+                                    false,
+                                    false
+                            );
+                            case TEMP_BAN -> TempBanCommand.INSTANCE.doTempBan(
+                                    senderActor,
+                                    new PlayerContext(true, player),
+                                    new ServerContext(true, msg.getServer(), false),
+                                    new ReasonContext(msg.getReason()),
+                                    new TimeContext(true, Objects.requireNonNull(msg.getUnit()).toMillis(msg.getTime())),
+                                    false,
+                                    false
+                            );
+                            case IP_BAN -> IPBanCommand.INSTANCE.execute(
+                                    senderActor,
+                                    new String[]{
+                                            player.getName(),
+                                            "reason=\"" + StringUtil.escapeQuotes(msg.getReason()) + "\"",
+                                            "server=\"" + StringUtil.escapeQuotes(msg.getServer()) + "\""
+                                    });
+                            case TEMP_IP_BAN -> TempIPBanCommand.INSTANCE.execute(
+                                    senderActor,
+                                    new String[]{
+                                            player.getName(),
+                                            "reason=\"" + StringUtil.escapeQuotes(msg.getReason()) + "\"",
+                                            "server=\"" + StringUtil.escapeQuotes(msg.getServer()) + "\"",
+                                            "time=\"" + DurationUtil.unProcessTime(Objects.requireNonNull(msg.getUnit()).toMillis(msg.getTime())) + "\""
+                                    });
+                            case MUTE -> MuteCommand.INSTANCE.doMute(
+                                    senderActor,
+                                    new PlayerContext(true, player),
+                                    new ServerContext(true, msg.getServer(), false),
+                                    new ReasonContext(msg.getReason()),
+                                    false,
+                                    false
+                            );
+                            case TEMP_MUTE -> TempMuteCommand.INSTANCE.doTempMute(
+                                    senderActor,
+                                    new PlayerContext(true, player),
+                                    new ServerContext(true, msg.getServer(), false),
+                                    new ReasonContext(msg.getReason()),
+                                    new TimeContext(true, Objects.requireNonNull(msg.getUnit()).toMillis(msg.getTime())),
+                                    false,
+                                    false
+                            );
+                            case IP_MUTE -> IPMuteCommand.INSTANCE.execute(
+                                    senderActor,
+                                    new String[]{
+                                            player.getName(),
+                                            "reason=\"" + StringUtil.escapeQuotes(msg.getReason()) + "\"",
+                                            "server=\"" + StringUtil.escapeQuotes(msg.getServer()) + "\""
+                                    });
+                            case TEMP_IP_MUTE -> TempIPMuteCommand.INSTANCE.execute(
+                                    senderActor,
+                                    new String[]{
+                                            player.getName(),
+                                            "reason=\"" + StringUtil.escapeQuotes(msg.getReason()) + "\"",
+                                            "server=\"" + StringUtil.escapeQuotes(msg.getServer()) + "\"",
+                                            "time=\"" + DurationUtil.unProcessTime(Objects.requireNonNull(msg.getUnit()).toMillis(msg.getTime())) + "\""
+                                    });
+                            case WARNING -> WarningCommand.INSTANCE.doWarning(
+                                    senderActor,
+                                    new PlayerContext(true, player),
+                                    new ServerContext(true, msg.getServer(), false),
+                                    new ReasonContext(msg.getReason())
+                            );
+                            case CAUTION -> CautionCommand.INSTANCE.doCaution(
+                                    senderActor,
+                                    new PlayerContext(true, player),
+                                    new ServerContext(true, msg.getServer(), false),
+                                    new ReasonContext(msg.getReason())
+                            );
+                            case KICK -> KickCommand.INSTANCE.doKick(
+                                    senderActor,
+                                    new PlayerContext(true, player),
+                                    new ServerContext(true, msg.getServer(), false),
+                                    new ReasonContext(msg.getReason())
+                            );
+                        }
+                    });
         }
     }
 }

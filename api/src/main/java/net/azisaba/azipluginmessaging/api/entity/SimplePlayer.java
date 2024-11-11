@@ -47,6 +47,14 @@ public final class SimplePlayer implements Player {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "SimplePlayer{" +
+                "uuid=" + uuid +
+                ", username='" + username + '\'' +
+                '}';
+    }
+
     @Contract("_ -> new")
     @NotNull
     public static SimplePlayer read(@NotNull DataInputStream in) throws IOException {

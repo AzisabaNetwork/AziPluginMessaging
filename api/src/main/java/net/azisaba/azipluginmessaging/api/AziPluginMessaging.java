@@ -3,6 +3,7 @@ package net.azisaba.azipluginmessaging.api;
 import net.azisaba.azipluginmessaging.api.entity.Player;
 import net.azisaba.azipluginmessaging.api.entity.PlayerAdapter;
 import net.azisaba.azipluginmessaging.api.protocol.PacketQueue;
+import net.azisaba.azipluginmessaging.api.protocol.message.ProxyboundPunishMessage;
 import net.azisaba.azipluginmessaging.api.protocol.message.ServerboundCheckRankExpirationMessage;
 import net.azisaba.azipluginmessaging.api.server.PacketSender;
 import net.azisaba.azipluginmessaging.api.util.SQLThrowableConsumer;
@@ -90,6 +91,10 @@ public interface AziPluginMessaging {
 
         @Contract
         default void checkRankAsync(@NotNull UUID uuid) {
+            throw new UnsupportedOperationException("Unsupported in current environment.");
+        }
+
+        default void handle(@NotNull ProxyboundPunishMessage msg) {
             throw new UnsupportedOperationException("Unsupported in current environment.");
         }
     }

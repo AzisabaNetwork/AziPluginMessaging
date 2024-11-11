@@ -30,6 +30,6 @@ public class ProxyboundGiveNitroSaraMessage extends PlayerMessage {
     public void write(@NotNull DataOutputStream out) throws IOException {
         super.write(out);
         out.writeInt(time);
-        out.writeUTF(unit.name()); // ordinal might be different with other versions of java
+        out.writeUTF(unit.name());
     }
 }

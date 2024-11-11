@@ -2,11 +2,11 @@ plugins {
     java
     `java-library`
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "7.1.2" apply false
+    id("com.gradleup.shadow") version "8.3.3" apply false
 }
 
 group = "net.azisaba.azipluginmessaging"
-version = "4.0.5"
+version = "4.1.0"
 
 repositories {
     mavenCentral()
@@ -29,7 +29,7 @@ subprojects {
         plugin("java")
         plugin("java-library")
         plugin("maven-publish")
-        plugin("com.github.johnrengelman.shadow")
+        plugin("com.gradleup.shadow")
     }
 
     repositories {

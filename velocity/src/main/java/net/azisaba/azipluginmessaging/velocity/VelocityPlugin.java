@@ -22,8 +22,8 @@ import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "azi-plugin-messaging", name = "AziPluginMessaging", version = "4.0.0",
-        dependencies = @Dependency(id = "luckperms"))
+@Plugin(id = "azi-plugin-messaging", name = "AziPluginMessaging", version = "4.1.0",
+        dependencies = {@Dependency(id = "luckperms"), @Dependency(id = "spicyazisaban")})
 public class VelocityPlugin {
     private final ProxyServer server;
 

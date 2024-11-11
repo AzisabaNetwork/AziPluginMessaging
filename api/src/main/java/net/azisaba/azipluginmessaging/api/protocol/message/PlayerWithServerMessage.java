@@ -43,9 +43,9 @@ public class PlayerWithServerMessage extends PlayerMessage {
         super.write(out);
     }
 
-    @Contract("null, _ -> fail; _, _ -> new")
+    @Contract("_, _ -> new")
     @NotNull
-    public static PlayerWithServerMessage read(@Nullable String server, @NotNull DataInputStream in) throws IOException {
+    public static PlayerWithServerMessage read(@NotNull String server, @NotNull DataInputStream in) throws IOException {
         UUID uuid = UUID.fromString(in.readUTF());
         String username = null;
         if (in.readBoolean()) {
