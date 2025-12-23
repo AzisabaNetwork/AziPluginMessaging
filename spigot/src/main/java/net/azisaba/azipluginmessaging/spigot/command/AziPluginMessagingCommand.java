@@ -42,21 +42,25 @@ public class AziPluginMessagingCommand implements TabExecutor {
                 if (ex.getContext() == null) {
                     sender.sendMessage(error);
                 }
-                StringBuilder sb = new StringBuilder(error);
-                sb.append("\n");
-                String prev = ex.getContext().peekWithAmount(-Math.min(ex.getContext().index(), 15));
-                StringBuilder next = new StringBuilder(ex.getContext().peekWithAmount(Math.min(ex.getContext().readableCharacters(), Math.max(15, ex.getLength()))));
-                if (next.length() == 0) {
-                    for (int i = 0; i < ex.getLength(); i++) {
-                        next.append(' ');
+                try {
+                    StringBuilder sb = new StringBuilder(error);
+                    sb.append("\n");
+                    String prev = ex.getContext().peekWithAmount(-Math.min(ex.getContext().index(), 15));
+                    StringBuilder next = new StringBuilder(ex.getContext().peekWithAmount(Math.min(ex.getContext().readableCharacters(), Math.max(15, ex.getLength()))));
+                    if (next.length() == 0) {
+                        for (int i = 0; i < ex.getLength(); i++) {
+                            next.append(' ');
+                        }
                     }
+                    sb.append(ChatColor.WHITE).append(prev);
+                    String left = next.substring(0, ex.getLength());
+                    String right = next.substring(ex.getLength(), next.length());
+                    sb.append(ChatColor.RED).append(ChatColor.UNDERLINE).append(left);
+                    sb.append(ChatColor.WHITE).append(right);
+                    sender.sendMessage(sb.toString());
+                } catch (Exception ignored) {
+                    sender.sendMessage(error);
                 }
-                sb.append(ChatColor.WHITE).append(prev);
-                String left = next.substring(0, ex.getLength());
-                String right = next.substring(ex.getLength(), next.length());
-                sb.append(ChatColor.RED).append(ChatColor.UNDERLINE).append(left);
-                sb.append(ChatColor.WHITE).append(right);
-                sender.sendMessage(sb.toString());
             } else {
                 sender.sendMessage(ChatColor.RED + "An internal error occurred while executing command: " + e.getMessage());
                 e.printStackTrace();

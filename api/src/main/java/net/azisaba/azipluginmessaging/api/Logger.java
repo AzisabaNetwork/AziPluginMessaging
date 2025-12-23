@@ -37,7 +37,7 @@ public interface Logger {
         Class<?> instClass = instance.getClass();
         return (Logger) Proxy.newProxyInstance(Logger.class.getClassLoader(), new Class[] { Logger.class }, (proxy, method, args) -> {
             Method m = ReflectionUtil.findMethod(instClass, method);
-            if (m == null) throw new RuntimeException(instClass.getTypeName() + " does not implements " + method.toGenericString());
+            if (m == null) throw new RuntimeException(instClass.getTypeName() + " does not implement " + method.toGenericString());
             return m.invoke(instance, args);
         });
     }

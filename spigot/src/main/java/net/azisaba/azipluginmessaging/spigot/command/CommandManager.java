@@ -20,7 +20,9 @@ public class CommandManager {
             new GiveNitroSaraCommand(),
             new ToggleNitroSaraCommand(),
             new DumpProtocolCommand(),
-            new PunishCommand()
+            new PunishCommand(),
+            new SetPermissionCommand(),
+            new UnsetPermissionCommand()
     );
 
     public static @Nullable Command getCommand(String name) {

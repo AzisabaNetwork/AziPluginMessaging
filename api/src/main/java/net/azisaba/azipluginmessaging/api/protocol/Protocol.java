@@ -50,6 +50,8 @@ public final class Protocol<T extends MessageHandler<M>, M extends Message> {
     public static final Protocol<ProxyboundToggleNitroSaraPacket, PlayerMessage> P_TOGGLE_NITRO_SARA = new Protocol<>(PacketFlow.TO_PROXY, 0x0B, new ProxyboundToggleNitroSaraPacket());
     public static final Protocol<ProxyboundCheckRankExpirationPacket, ProxyboundCheckRankExpirationMessage> P_CHECK_RANK_EXPIRATION = new Protocol<>(PacketFlow.TO_PROXY, 0x0C, new ProxyboundCheckRankExpirationPacket());
     public static final Protocol<ProxyboundPunishPacket, ProxyboundPunishMessage> P_PUNISH = new Protocol<>(PacketFlow.TO_PROXY, 0x0D, new ProxyboundPunishPacket());
+    public static final Protocol<ProxyboundSetPermissionPacket, ProxyboundNodeMessage> P_SET_PERMISSION = new Protocol<>(PacketFlow.TO_PROXY, 0x0E, new ProxyboundSetPermissionPacket());
+    public static final Protocol<ProxyboundUnsetPermissionPacket, ProxyboundNodeMessage> P_UNSET_PERMISSION = new Protocol<>(PacketFlow.TO_PROXY, 0x0F, new ProxyboundUnsetPermissionPacket());
 
     public static final Protocol<ServerboundEncryptionPacket, EncryptionMessage> S_ENCRYPTION = new Protocol<>(PacketFlow.TO_SERVER, 0x00, new ServerboundEncryptionPacket());
     public static final Protocol<ServerboundEncryptionResponsePacket, EmptyMessage> S_ENCRYPTION_RESPONSE = new Protocol<>(PacketFlow.TO_SERVER, 0x01, new ServerboundEncryptionResponsePacket());
