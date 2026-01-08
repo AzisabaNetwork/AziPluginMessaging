@@ -18,7 +18,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class ProxyboundSetPermissionPacket implements ProxyMessageHandler<ProxyboundNodeMessage> {
-    public static final @NotNull String NODE_PREFIX = "azipluginmessaging.custom.";
+    public static final @NotNull String NODE_PREFIX = "group.custom--";
 
     @Override
     public @NotNull ProxyboundNodeMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {

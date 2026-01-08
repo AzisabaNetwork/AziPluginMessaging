@@ -18,7 +18,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class ProxyboundUnsetPermissionPacket implements ProxyMessageHandler<ProxyboundNodeMessage> {
-    public static final @NotNull String NODE_PREFIX = "azipluginmessaging.custom.";
+    public static final @NotNull String NODE_PREFIX = ProxyboundSetPermissionPacket.NODE_PREFIX;
 
     @Override
     public @NotNull ProxyboundNodeMessage read(@NotNull ServerConnection server, @NotNull DataInputStream in) throws IOException {
@@ -35,7 +35,7 @@ public class ProxyboundUnsetPermissionPacket implements ProxyMessageHandler<Prox
             throw new IllegalArgumentException("Could not find an user in LuckPerms database: " + msg.getPlayer().getUniqueId());
         }
         NodeMap map = user.data();
-        if (!map.remove(Node.builder(NODE_PREFIX + msg.getNode()).value(true).withContext("server", msg.getServer()).build()).wasSuccessful()) {
+        if (!map.remove(Node.builder(ProxyboundSetPermissionPacket.NODE_PREFIX + msg.getNode()).value(true).withContext("server", msg.getServer()).build()).wasSuccessful()) {
             throw new IllegalStateException("Failed to remove permission node");
         }
         String username = user.getUsername();
@@ -49,7 +49,7 @@ public class ProxyboundUnsetPermissionPacket implements ProxyMessageHandler<Prox
                         .sourceName("AziPluginMessaging[" + msg.getServer() + "]@" + api.getServerName())
                         .target(msg.getPlayer().getUniqueId())
                         .targetName(username)
-                        .description("permission unset " + NODE_PREFIX + msg.getNode() + " true server=" + msg.getServer())
+                        .description("permission unset " + ProxyboundSetPermissionPacket.NODE_PREFIX + msg.getNode() + " true server=" + msg.getServer())
                         .build());
     }
 }
