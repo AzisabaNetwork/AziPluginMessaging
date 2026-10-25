@@ -11,6 +11,7 @@ import net.azisaba.azipluginmessaging.api.util.EncryptionUtil;
 import net.azisaba.azipluginmessaging.api.util.TokenUtil;
 import net.azisaba.azipluginmessaging.spigot.command.AziPluginMessagingCommand;
 import net.azisaba.azipluginmessaging.spigot.entity.PlayerImpl;
+import net.azisaba.azipluginmessaging.spigot.util.SchedulerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +25,7 @@ import java.util.Objects;
 
 public class SpigotPlugin extends JavaPlugin implements Listener {
     public static SpigotPlugin plugin;
-    private boolean processJoinEvent = false;
+    private volatile boolean processJoinEvent = false;
 
     @Override
     public void onLoad() {
@@ -37,7 +38,7 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         // Don't process PlayerJoinEvent for 20 ticks, the server may be lagging at this point.
-        Bukkit.getScheduler().runTaskLater(this, () -> processJoinEvent = true, 20);
+        SchedulerUtil.runLater(this, () -> processJoinEvent = true, 20);
 
         Objects.requireNonNull(Bukkit.getPluginCommand("azipluginmessaging")).setExecutor(new AziPluginMessagingCommand());
         try {
@@ -78,7 +79,7 @@ public class SpigotPlugin extends JavaPlugin implements Listener {
         player.setEncrypted(false);
         player.setRemotePublicKeyInternal(null);
         int i = player.joins.incrementAndGet();
-        Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
+        SchedulerUtil.runLaterAsync(this, () -> {
             if (player.joins.get() != i) {
                 return;
             }
